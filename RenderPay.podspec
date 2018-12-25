@@ -38,11 +38,13 @@ Payment library using Stripe
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  s.frameworks = 'UIKit', 'MapKit', 'FirebaseCore', 'FirebaseAuth', 'FirebaseDatabase', 'FirebaseStorage', 'FirebaseRemoteConfig'
+  s.frameworks = 'UIKit', 'MapKit', 'FirebaseCore', 'FirebaseAuth', 'FirebaseDatabase', 'FirebaseStorage', 'FirebaseRemoteConfig', 'RxSwift', 'RxCocoa'
   s.dependency 'Firebase'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Database'
   s.dependency 'Firebase/Storage'
   s.dependency 'Firebase/RemoteConfig'
+  s.dependency 'RxSwift'
+  s.dependency 'RxCocoa'
 end

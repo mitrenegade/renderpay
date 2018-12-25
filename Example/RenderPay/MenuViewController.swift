@@ -34,11 +34,6 @@ class MenuViewController: UIViewController {
     fileprivate let disposeBag = DisposeBag()
     
     var menuItems: [MenuItem] = loggedOutMenu
-    lazy var stripeService: StripeService = {
-        let clientId = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
-        let newService = StripeService(clientId: clientId)
-        return newService
-    }()
     var userId: String?
     
     @IBOutlet weak var buttonConnect: UIButton!
@@ -117,9 +112,7 @@ class MenuViewController: UIViewController {
     }
     
     func connectToStripe() {
-        guard let userId = userId else { return }
-        let urlString = stripeService.oauth_url(userId)
-        guard let url = URL(string: urlString) else { return }
+        guard let userId = userId, let urlString = StripeService.shared.oauth_url(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
 }
@@ -134,15 +127,15 @@ extension MenuViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         if indexPath.row < menuItems.count {
-            cell.textLabel?.text = menuItems[indexPath.row].rawValue
-            
             switch menuItems[indexPath.row] {
+            case .stripe:
+                cell.textLabel?.text = StripeService.shared.accountState.value.description
             case .version:
                 let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
                 let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
                 cell.textLabel?.text = "Version: \(version ?? "unknown") (\(build ?? "unknown"))\(TESTING ? "t" : "")"
             default:
-                break
+                cell.textLabel?.text = menuItems[indexPath.row].rawValue
             }
         } else {
             cell.textLabel?.text = nil

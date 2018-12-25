@@ -11,12 +11,12 @@ import FirebaseDatabase
 import Firebase
 import FirebaseMessaging
 import Balizinha
+import RenderPay
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Firebase
@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let urlSuffix = TESTING ? "-dev" : "-c9cd7"
         FirebaseAPIService.baseURL = URL(string: "https://us-central1-balizinha\(urlSuffix).cloudfunctions.net/")
+
+        let clientId = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
+        StripeService.clientId = clientId
 
         return true
     }
