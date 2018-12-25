@@ -41,6 +41,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true), components.scheme == "panna" {
+            var pathComponents = components.path.components(separatedBy: "/")
+            print("url: \(url)\ncomponents: \(components)\npath: \(pathComponents)")
+        }
+        return false
+    }
 
 }
 

@@ -12,8 +12,9 @@ let CLIENT_ID_PROD = "ca_ECowdoBb2DfRFlBMQSZ2jT4SSXAUJ6Lx"
 
 let TESTING = true
 public class StripeService: NSObject {
-    public var oauth_url: String {
+    public func oauth_url(_ userId: String) -> String {
         let client_id = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
-        return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(client_id)&scope=read_write&state=12345"
+        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
+        return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(client_id)&scope=read_write&state=\(userId)"
     }
 }

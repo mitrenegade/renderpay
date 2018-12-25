@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func didClickConnect() {
-        let urlString = service.oauth_url
+        let urlString = service.oauth_url("12345")
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
