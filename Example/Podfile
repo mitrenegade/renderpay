@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'RenderPay_Example' do
+  pod 'RenderPay', :path => '../'
+
+  target 'RenderPay_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
