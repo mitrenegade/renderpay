@@ -14,6 +14,6 @@ let TESTING = true
 public class StripeService: NSObject {
     public var oauth_url: String {
         let client_id = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
-        return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(client_id)&scope=read_write"
+        return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(client_id)&scope=read_write&state=12345"
     }
 }
