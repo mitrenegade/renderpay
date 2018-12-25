@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import FirebaseDatabase
+import Balizinha
 
 public enum AccountState: Equatable {
     case unknown
@@ -27,14 +28,17 @@ public enum AccountState: Equatable {
 }
 
 public class StripeService {
-    public static let shared: StripeService = StripeService()
+    public static let shared: StripeService = StripeService(apiService: FirebaseAPIService())
     public static var clientId: String?
     fileprivate var customers: [String: String] = [:]
+    
+    var apiService: CloudAPIService?
 
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
 
     // only used for testing, since StripeService.shared is used by client apps
-    public init() {
+    public init(apiService: CloudAPIService? = nil) {
+        self.apiService = apiService
         getStripeCustomers(completion: nil)
     }
     
@@ -83,14 +87,14 @@ public class StripeService {
     
     public func savePaymentInfo(userId: String, source: String, last4: String, label: String) {
         let params: [String: Any] = ["userId": userId, "source": source, "last4": last4, "label": label]
-        FirebaseAPIService().cloudFunction(functionName: "savePaymentInfo", method: "POST", params: params) { (result, error) in
+        apiService?.cloudFunction(functionName: "savePaymentInfo", method: "POST", params: params) { (result, error) in
             print("FirebaseAPIService: savePaymentInfo result \(result) error \(error)")
         }
     }
     
     public func holdPayment(userId: String, eventId: String, completion: ((_ response: Any?, _ error: Error?) -> ())?) {
         let params = ["userId": userId, "eventId": eventId]
-        FirebaseAPIService().cloudFunction(functionName: "holdPayment", method: "POST", params: params) { (results, error) in
+        apiService?.cloudFunction(functionName: "holdPayment", method: "POST", params: params) { (results, error) in
             completion?(results, error)
         }
     }
@@ -106,7 +110,7 @@ public class StripeService {
         } else {
             info = ["userId": userId, "eventId": eventId, "chargeId": chargeId]
         }
-        FirebaseAPIService().cloudFunction(functionName: "capturePayment", method: "POST", params: info) { (results, error) in
+        apiService?.cloudFunction(functionName: "capturePayment", method: "POST", params: info) { (results, error) in
             completion?(results, error)
         }
     }
@@ -121,7 +125,7 @@ public class StripeService {
         } else {
             info = ["chargeId": chargeId, "eventId": eventId]
         }
-        FirebaseAPIService().cloudFunction(functionName: "refundCharge", method: "POST", params: info) { (results, error) in
+        apiService?.cloudFunction(functionName: "refundCharge", method: "POST", params: info) { (results, error) in
             completion?(results, error)
         }
     }
