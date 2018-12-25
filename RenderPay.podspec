@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'RenderPay'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of RenderPay.'
+  s.summary          = 'Handles Stripe connect'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+Payment library using Stripe
                        DESC
 
   s.homepage         = 'https://github.com/bobbyren/RenderPay'
@@ -29,7 +29,8 @@ TODO: Add long description of the pod here.
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
-
+  s.swift_version = '4.1'
+  s.static_framework = true
   s.source_files = 'RenderPay/Classes/**/*'
   
   # s.resource_bundles = {
@@ -37,6 +38,11 @@ TODO: Add long description of the pod here.
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.frameworks = 'UIKit', 'MapKit', 'FirebaseCore', 'FirebaseAuth', 'FirebaseDatabase', 'FirebaseStorage', 'FirebaseRemoteConfig'
+  s.dependency 'Firebase'
+  s.dependency 'Firebase/Core'
+  s.dependency 'Firebase/Auth'
+  s.dependency 'Firebase/Database'
+  s.dependency 'Firebase/Storage'
+  s.dependency 'Firebase/RemoteConfig'
 end
