@@ -31,6 +31,11 @@ public class StripeService {
     public static var clientId: String?
 
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
+
+    // only used for testing, since StripeService.shared is used by client apps
+    public init() {
+        
+    }
     
     public func startListeningForAccount(userId: String) {
         accountState.accept(.loading)
