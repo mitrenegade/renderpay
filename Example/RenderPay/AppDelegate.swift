@@ -10,8 +10,8 @@ import UIKit
 import FirebaseDatabase
 import Firebase
 import FirebaseMessaging
-import Balizinha
 import RenderPay
+import Balizinha
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

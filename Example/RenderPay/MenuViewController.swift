@@ -123,7 +123,7 @@ class MenuViewController: UIViewController {
     }
     
     func connectToStripe() {
-        guard let userId = userId, let urlString = StripeService.shared.oauth_url(userId), let url = URL(string: urlString) else { return }
+        guard let userId = userId, let urlString = StripeService.shared.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
 }

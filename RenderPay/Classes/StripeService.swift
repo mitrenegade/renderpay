@@ -50,7 +50,7 @@ public class StripeService {
         }
     }
 
-    public func oauth_url(_ userId: String) -> String? {
+    public func getOAuthUrl(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
         guard let clientId = StripeService.clientId else { return nil }
         return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
