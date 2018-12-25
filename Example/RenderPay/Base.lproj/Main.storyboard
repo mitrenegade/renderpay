@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Menu View Controller-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModule="RenderPay_Example" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="vXZ-lx-hvc" customClass="MenuViewController" customModule="RenderPay_Example" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -21,26 +21,49 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sj1-IH-Vae">
-                                <rect key="frame" x="136" y="318.5" width="103" height="30"/>
-                                <state key="normal" title="Stripe Connect"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qT3-gx-hft">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="Pad-nu-EZC" style="IBUITableViewCellStyleDefault" id="P7d-v9-sa9">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="P7d-v9-sa9" id="GEF-Ia-d1l">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Pad-nu-EZC">
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
                                 <connections>
-                                    <action selector="didClickConnect" destination="vXZ-lx-hvc" eventType="touchUpInside" id="wqV-hD-Lbu"/>
+                                    <outlet property="dataSource" destination="vXZ-lx-hvc" id="5OA-hH-bEi"/>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="bN1-28-aVp"/>
                                 </connections>
-                            </button>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Sj1-IH-Vae" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="6gJ-zs-q4G"/>
-                            <constraint firstItem="Sj1-IH-Vae" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="aam-18-xAQ"/>
+                            <constraint firstItem="qT3-gx-hft" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="43a-rk-KJE"/>
+                            <constraint firstItem="qT3-gx-hft" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="H8f-E4-jhB"/>
+                            <constraint firstAttribute="trailing" secondItem="qT3-gx-hft" secondAttribute="trailing" id="KbN-ug-Tl5"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="qT3-gx-hft" secondAttribute="bottom" id="cNs-0j-WYG"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="buttonConnect" destination="Sj1-IH-Vae" id="j5U-VA-Aua"/>
+                        <outlet property="tableView" destination="qT3-gx-hft" id="DOn-0q-4qA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="53.600000000000001" y="102.99850074962519"/>
         </scene>
     </scenes>
 </document>
