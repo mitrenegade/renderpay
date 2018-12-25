@@ -8,8 +8,9 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import FirebaseDatabase
 
-public enum AccountState {
+public enum AccountState: Equatable {
     case unknown
     case loading
     case account(String)
@@ -30,6 +31,24 @@ public class StripeService {
     public static var clientId: String?
 
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
+    
+    public func startListeningForAccount(userId: String) {
+        accountState.accept(.loading)
+        
+        let ref = Database.database().reference().child("stripeAccounts").child(userId)
+        ref.observe(.value) { [weak self] (snapshot) in
+            guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
+                self?.accountState.accept(.none)
+                return
+            }
+            print("Account info: \(info)")
+            if let stripeUserId = info["stripeUserId"] as? String {
+                self?.accountState.accept(.account(stripeUserId))
+            } else {
+                self?.accountState.accept(.unknown)
+            }
+        }
+    }
 
     public func oauth_url(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback

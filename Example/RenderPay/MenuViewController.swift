@@ -34,7 +34,13 @@ class MenuViewController: UIViewController {
     fileprivate let disposeBag = DisposeBag()
     
     var menuItems: [MenuItem] = loggedOutMenu
-    var userId: String?
+    var userId: String? {
+        didSet {
+            if let userId = userId {
+                StripeService.shared.startListeningForAccount(userId: userId)
+            }
+        }
+    }
     
     @IBOutlet weak var buttonConnect: UIButton!
     
@@ -56,6 +62,11 @@ class MenuViewController: UIViewController {
                 self?.reloadTable()
             }
         }).disposed(by: disposeBag)
+        
+        StripeService.shared.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
+            print("StripeService accountState changed: \(state)")
+            self?.reloadTable()
+        })
     }
     
     func promptForLogin() {
