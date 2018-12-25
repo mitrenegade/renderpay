@@ -34,8 +34,11 @@ class MenuViewController: UIViewController {
     fileprivate let disposeBag = DisposeBag()
     
     var menuItems: [MenuItem] = loggedOutMenu
-    let service = StripeService()
-    
+    lazy var stripeService: StripeService = {
+        let clientId = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
+        let newService = StripeService(clientId: clientId)
+        return newService
+    }()
     var userId: String?
     
     @IBOutlet weak var buttonConnect: UIButton!
@@ -115,7 +118,7 @@ class MenuViewController: UIViewController {
     
     func connectToStripe() {
         guard let userId = userId else { return }
-        let urlString = service.oauth_url(userId)
+        let urlString = stripeService.oauth_url(userId)
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
