@@ -28,16 +28,18 @@ public enum AccountState: Equatable {
 }
 
 public class StripeService {
-    public static let shared: StripeService = StripeService(apiService: FirebaseAPIService())
-    public static var clientId: String?
     fileprivate var customers: [String: String] = [:]
-    
-    var apiService: CloudAPIService?
+
+    public var clientId: String?
+    public var baseUrl: String? // used for redirect
+    public var apiService: CloudAPIService?
 
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
 
     // only used for testing, since StripeService.shared is used by client apps
-    public init(apiService: CloudAPIService? = nil) {
+    public init(clientId: String, baseUrl: String, apiService: CloudAPIService? = nil) {
+        self.clientId = clientId
+        self.baseUrl = baseUrl
         self.apiService = apiService
         getStripeCustomers(completion: nil)
     }
@@ -62,8 +64,12 @@ public class StripeService {
 
     public func getOAuthUrl(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        guard let clientId = StripeService.clientId else { return nil }
-        return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
+        guard let clientId = clientId else { return nil }
+        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
+        if let baseUrl = baseUrl {
+            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
+        }
+        return url
     }
     
 /* MARK: - Payments */
