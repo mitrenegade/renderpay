@@ -47,5 +47,5 @@ Payment library using Stripe
   s.dependency 'Firebase/RemoteConfig'
   s.dependency 'RxSwift'
   s.dependency 'RxCocoa'
-  s.dependency 'Balizinha', '~>0.4.8'
+  s.dependency 'Balizinha', '~>0.5.0'
 end
