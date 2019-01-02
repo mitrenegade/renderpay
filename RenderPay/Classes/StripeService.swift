@@ -36,12 +36,15 @@ public class StripeService {
 
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
 
-    // only used for testing, since StripeService.shared is used by client apps
     public init(clientId: String, baseUrl: String, apiService: CloudAPIService? = nil) {
+        // for connect
         self.clientId = clientId
         self.baseUrl = baseUrl
         self.apiService = apiService
         getStripeCustomers(completion: nil)
+        
+        // for payments
+        STPPaymentConfiguration.shared().publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
     }
     
     public func startListeningForAccount(userId: String) {
