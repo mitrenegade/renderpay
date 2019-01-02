@@ -22,26 +22,36 @@ import Balizinha
 
 enum MenuItem: String {
     case stripe = "Stripe connect"
+    case charge = "Test payment"
     case version = "Version"
     case login = "Login"
     case logout = "Logout"
 }
-fileprivate let loggedInMenu: [MenuItem] = [.stripe, .version, .logout]
+fileprivate var loggedInMenu: [MenuItem] = [.stripe, .charge, .version, .logout]
 fileprivate let loggedOutMenu: [MenuItem] = [.login]
 
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
-    fileprivate let disposeBag = DisposeBag()
+    fileprivate var disposeBag = DisposeBag()
+    var stripeService: StripeService?
     
     var menuItems: [MenuItem] = loggedOutMenu
     var userId: String? {
         didSet {
-            if let userId = userId {
-                StripeService.shared.startListeningForAccount(userId: userId)
+            if let userId = userId, oldValue == nil {
+                let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
+                stripeService = StripeService(clientId: userId, baseUrl: baseUrl)
+                stripeService?.startListeningForAccount(userId: userId)
+                
+                stripeService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
+                    print("StripeService accountState changed: \(state)")
+                    self?.reloadTable()
+                }).disposed(by: disposeBag)
+
             }
         }
     }
-    
+
     @IBOutlet weak var buttonConnect: UIButton!
     
     override func viewDidLoad() {
@@ -62,11 +72,6 @@ class MenuViewController: UIViewController {
                 self?.reloadTable()
             }
         }).disposed(by: disposeBag)
-        
-        StripeService.shared.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
-            print("StripeService accountState changed: \(state)")
-            self?.reloadTable()
-        })
     }
     
     func promptForLogin() {
@@ -123,7 +128,7 @@ class MenuViewController: UIViewController {
     }
     
     func connectToStripe() {
-        guard let userId = userId, let urlString = StripeService.shared.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
+        guard let userId = userId, let urlString = stripeService?.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
 }
@@ -132,15 +137,25 @@ extension MenuViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return menuItems.count
     }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         if indexPath.row < menuItems.count {
             switch menuItems[indexPath.row] {
             case .stripe:
-                cell.textLabel?.text = StripeService.shared.accountState.value.description
+                cell.textLabel?.text = stripeService?.accountState.value.description
+            case .charge:
+                cell.textLabel?.text = menuItems[indexPath.row].rawValue
+                switch stripeService?.accountState.value ?? .none {
+                case .account:
+                    cell.textLabel?.alpha = 1
+                default:
+                    cell.textLabel?.alpha = 0.5
+                }
             case .version:
                 let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
                 let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
@@ -165,11 +180,22 @@ extension MenuViewController: UITableViewDelegate {
             promptForLogin()
         case .stripe:
             connectToStripe()
+        case .charge:
+            switch stripeService?.accountState.value ?? .none {
+            case .account:
+                goToCharge()
+            default:
+                simpleAlert("Cannot test charges", message: "A stripe account must be connected first")
+            }
         case .version:
             break
         case .logout:
             AuthService.shared.logout()
             reloadTable()
         }
+    }
+    
+    func goToCharge() {
+        // TODO: display a payment processor
     }
 }
