@@ -7,7 +7,7 @@ class StripeServiceTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        service = StripeConnectService(clientId: "123", baseUrl: "")
+        service = StripeConnectService(clientId: "123")
     }
     
     override func tearDown() {

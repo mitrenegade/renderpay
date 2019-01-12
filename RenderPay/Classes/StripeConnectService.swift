@@ -22,24 +22,38 @@ public enum AccountState: Equatable {
         switch self {
         case .unknown: return "unknown"
         case .loading: return "loading..."
-        case .account(let acct): return "account: \(acct)"
+        case .account(let acct): return "Merchant account: \(acct)"
         case .none: return "none"
+        }
+    }
+
+    public static func ==(lhs: AccountState, rhs: AccountState) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none):
+            return true
+        case (.loading, .loading):
+            return true
+        case (.account(let p1), .account(let p2)):
+            return p1 == p2
+        case (.unknown, .unknown):
+            return true
+        default:
+            return false
         }
     }
 }
 
 public class StripeConnectService {
     public var clientId: String?
-    public var baseUrl: String? // used for redirect
+    public var redirectUrl: String? // used for redirect
     public var apiService: CloudAPIService?
     
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    public init(clientId: String,  baseUrl: String, apiService: CloudAPIService? = nil) {
+    public init(clientId: String, apiService: CloudAPIService? = nil) {
         // for connect
         self.clientId = clientId
-        self.baseUrl = baseUrl
-        self.apiService = apiService        
+        self.apiService = apiService
     }
     
     public func startListeningForAccount(userId: String) {
@@ -64,7 +78,7 @@ public class StripeConnectService {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
         guard let clientId = clientId else { return nil }
         var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = baseUrl {
+        if let baseUrl = FirebaseAPIService.baseURL?.absoluteString {
             url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
         }
         return url

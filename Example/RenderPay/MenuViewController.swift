@@ -21,30 +21,38 @@ import Balizinha
 //
 
 enum MenuItem: String {
-    case stripe = "Stripe connect"
+    case stripeConnect = "Stripe connect"
+    case stripePayment = "Payment info"
     case charge = "Test payment"
     case version = "Version"
     case login = "Login"
     case logout = "Logout"
 }
-fileprivate var loggedInMenu: [MenuItem] = [.stripe, .charge, .version, .logout]
+fileprivate var loggedInMenu: [MenuItem] = [.stripeConnect, .stripePayment, .charge, .version, .logout]
 fileprivate let loggedOutMenu: [MenuItem] = [.login]
 
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    var stripeService: StripeConnectService?
+    var connectService: StripeConnectService?
+    var paymentService: StripePaymentService?
     
+    let apiService = FirebaseAPIService()
+
     var menuItems: [MenuItem] = loggedOutMenu
     var userId: String? {
         didSet {
             if let userId = userId, oldValue == nil {
                 let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
                 let clientId = TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD
-                stripeService = StripeConnectService(clientId: clientId, baseUrl: baseUrl)
-                stripeService?.startListeningForAccount(userId: userId)
+                FirebaseAPIService.baseURL = URL(string: baseUrl)
+
+                connectService = StripeConnectService(clientId: clientId, apiService: apiService)
+                connectService?.startListeningForAccount(userId: userId)
                 
-                stripeService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
+                paymentService = StripePaymentService(apiService: apiService)
+                
+                connectService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
                     print("StripeService accountState changed: \(state)")
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
@@ -71,10 +79,25 @@ class MenuViewController: UIViewController {
                 self?.userId = AuthService.currentUser?.uid
                 self?.menuItems = loggedInMenu
                 self?.reloadTable()
+                
+                self?.loadStripeCustomer()
             }
         }).disposed(by: disposeBag)
     }
-    
+
+    func loadStripeCustomer() {
+        guard let userId = self.userId else { return }
+        let ref = firRef.child("stripe_customers").child(userId).child("customer_id")
+        ref.observe(.value, with: { (snapshot) in
+            guard snapshot.exists(), let customerId = snapshot.value as? String else {
+                print("Error no customer loaded")
+                self.paymentService?.customerId.accept(nil)
+                return
+            }
+            self.paymentService?.customerId.accept(customerId)
+        })
+    }
+
     func promptForLogin() {
         let alert = UIAlertController(title: "Please Login", message: "Enter your email", preferredStyle: .alert)
         alert.addTextField { (textField : UITextField!) -> Void in
@@ -129,8 +152,12 @@ class MenuViewController: UIViewController {
     }
     
     func connectToStripe() {
-        guard let userId = userId, let urlString = stripeService?.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
+        guard let userId = userId, let urlString = connectService?.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
+    }
+    
+    func refreshPayment() {
+        
     }
 }
 
@@ -147,11 +174,11 @@ extension MenuViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         if indexPath.row < menuItems.count {
             switch menuItems[indexPath.row] {
-            case .stripe:
-                cell.textLabel?.text = stripeService?.accountState.value.description
+            case .stripeConnect:
+                cell.textLabel?.text = connectService?.accountState.value.description
             case .charge:
                 cell.textLabel?.text = menuItems[indexPath.row].rawValue
-                switch stripeService?.accountState.value ?? .none {
+                switch connectService?.accountState.value ?? .none {
                 case .account:
                     cell.textLabel?.alpha = 1
                 default:
@@ -179,10 +206,12 @@ extension MenuViewController: UITableViewDelegate {
         switch selection {
         case .login:
             promptForLogin()
-        case .stripe:
+        case .stripeConnect:
             connectToStripe()
+        case .stripePayment:
+            refreshPayment()
         case .charge:
-            switch stripeService?.accountState.value ?? .none {
+            switch connectService?.accountState.value ?? .none {
             case .account:
                 goToCharge()
             default:

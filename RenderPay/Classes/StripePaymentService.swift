@@ -12,25 +12,19 @@ import FirebaseDatabase
 import Balizinha
 import Stripe
 
-enum PaymentStatus {
+public enum PaymentStatus {
     case none // no customer_id exists
     case loading // customer_id exists, loading payment
     case ready(paymentMethod: STPPaymentMethod?)
     
-    static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
+    public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none):
             return true
         case (.loading, .loading):
             return true
         case (.ready(let p1), .ready(let p2)):
-            if p1 == nil && p2 == nil {
-                return true
-            }
-            if p1 != nil && p2 != nil {
-                return true
-            }
-            return false
+            return p1?.label == p2?.label
         default:
             return false
         }
@@ -42,7 +36,7 @@ public class StripePaymentService: NSObject {
     
     // payment method
     var paymentContext: Variable<STPPaymentContext?> = Variable(nil)
-    var customerId: Variable<String?> = Variable(nil)
+    public var customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
     fileprivate var paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     let status: Observable<PaymentStatus>
 
@@ -101,7 +95,7 @@ public class StripePaymentService: NSObject {
     public func resetOnLogout() {
         print("StripeService: resetting on logout")
         disposeBag = DisposeBag()
-        customerId.value = nil
+        customerId.accept(nil)
         paymentContextLoading.value = false
         paymentContext.value = nil
         hostController = nil
