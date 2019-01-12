@@ -33,7 +33,7 @@ fileprivate let loggedOutMenu: [MenuItem] = [.login]
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    var stripeService: StripeService?
+    var stripeService: StripeConnectService?
     
     var menuItems: [MenuItem] = loggedOutMenu
     var userId: String? {
@@ -41,7 +41,7 @@ class MenuViewController: UIViewController {
             if let userId = userId, oldValue == nil {
                 let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
                 let clientId = TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD
-                stripeService = StripeService(clientId: clientId, baseUrl: baseUrl)
+                stripeService = StripeConnectService(clientId: clientId, baseUrl: baseUrl)
                 stripeService?.startListeningForAccount(userId: userId)
                 
                 stripeService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in

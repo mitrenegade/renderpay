@@ -17,7 +17,7 @@ enum PaymentStatus {
     case loading // customer_id exists, loading payment
     case ready(paymentMethod: STPPaymentMethod?)
     
-    func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
+    static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none):
             return true
@@ -37,7 +37,7 @@ enum PaymentStatus {
     }
 }
 
-public class StripePaymentService {
+public class StripePaymentService: NSObject {
     fileprivate var customers: [String: String] = [:]
     
     // payment method
@@ -92,12 +92,35 @@ public class StripePaymentService {
         }
         
         // TODO: when customer ID is set, create context
-        super.init()
-        
         getStripeCustomers(completion: nil)
-        self.customerId.filterNil().asObservable().subscribe()
+        self.customerId.asObservable().filterNil().subscribe(onNext: { (customerId) in
+            self.loadPayment()
+        }).disposed(by: disposeBag)
     }
 
+    func resetOnLogout() {
+        print("StripeService: resetting on logout")
+        disposeBag = DisposeBag()
+        customerId.value = nil
+        paymentContextLoading.value = false
+        paymentContext.value = nil
+        hostController = nil
+    }
+    
+    func loadPayment() {
+        guard let customerId = self.customerId.value else { return }
+        guard self.paymentContext.value == nil else { return }
+        
+        print("StripeService: loadPayment for customer \(customerId)")
+        let customerContext = STPCustomerContext(keyProvider: self)
+        let paymentContext = STPPaymentContext(customerContext: customerContext)
+        paymentContext.delegate = self
+        if let hostController = self.hostController {
+            paymentContext.hostViewController = hostController
+        }
+        self.paymentContext.value = paymentContext
+    }
+    
 /* MARK: - Payments */
     public func checkForPayment(for eventId: String, by playerId: String, completion:@escaping ((Bool)->Void)) {
         let ref = Database.database().reference().child("charges/events/\(eventId)")
@@ -192,6 +215,18 @@ public class StripePaymentService {
             return playerId
         } else {
             return nil
+        }
+    }
+}
+
+// MARK: - Ephemeral keys
+extension StripePaymentService: STPEphemeralKeyProvider {
+    public func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
+        guard let customerId = self.customerId.value else { return }
+        let params: [String: Any] = ["api_version": apiVersion, "customer_id": customerId]
+        let method = "POST"
+        apiService?.cloudFunction(functionName: "ephemeralKeys", method: method, params: params) { (result, error) in
+            completion(result as? [AnyHashable: Any], error)
         }
     }
 }

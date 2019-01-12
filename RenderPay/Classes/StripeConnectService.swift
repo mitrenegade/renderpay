@@ -28,7 +28,7 @@ public enum AccountState: Equatable {
     }
 }
 
-class StripeConnectService {
+public class StripeConnectService {
     public var clientId: String?
     public var baseUrl: String? // used for redirect
     public var apiService: CloudAPIService?

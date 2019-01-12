@@ -2,12 +2,12 @@ import XCTest
 import RenderPay
 
 class StripeServiceTests: XCTestCase {
-    var service: StripeService!
+    var service: StripeConnectService!
     
     override func setUp() {
         super.setUp()
         
-        service = StripeService(clientId: "123", baseUrl: "")
+        service = StripeConnectService(clientId: "123", baseUrl: "")
     }
     
     override func tearDown() {
