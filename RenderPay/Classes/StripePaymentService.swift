@@ -1,5 +1,5 @@
 //
-//  StripeService.swift
+//  StripePaymentService.swift
 //  Pods-RenderPay_Example
 //
 //  Created by Bobby Ren on 12/25/18.
@@ -10,71 +10,94 @@ import RxSwift
 import RxCocoa
 import FirebaseDatabase
 import Balizinha
+import Stripe
 
-public enum AccountState: Equatable {
-    case unknown
-    case loading
-    case account(String)
-    case none
+enum PaymentStatus {
+    case none // no customer_id exists
+    case loading // customer_id exists, loading payment
+    case ready(paymentMethod: STPPaymentMethod?)
     
-    public var description: String {
-        switch self {
-        case .unknown: return "unknown"
-        case .loading: return "loading..."
-        case .account(let acct): return "account: \(acct)"
-        case .none: return "none"
+    func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none):
+            return true
+        case (.loading, .loading):
+            return true
+        case (.ready(let p1), .ready(let p2)):
+            if p1 == nil && p2 == nil {
+                return true
+            }
+            if p1 != nil && p2 != nil {
+                return true
+            }
+            return false
+        default:
+            return false
         }
     }
 }
 
-public class StripeService {
+public class StripePaymentService {
     fileprivate var customers: [String: String] = [:]
+    
+    // payment method
+    var paymentContext: Variable<STPPaymentContext?> = Variable(nil)
+    var customerId: Variable<String?> = Variable(nil)
+    fileprivate var paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
+    let status: Observable<PaymentStatus>
 
-    public var clientId: String?
-    public var baseUrl: String? // used for redirect
+    weak var hostController: UIViewController? {
+        didSet {
+            self.paymentContext.value?.hostViewController = hostController
+        }
+    }
+    
+    fileprivate var disposeBag: DisposeBag
+
     public var apiService: CloudAPIService?
-
-    public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
-
-    public init(clientId: String,  baseUrl: String, apiService: CloudAPIService? = nil) {
+    public init(apiService: CloudAPIService? = nil) {
         // for connect
-        self.clientId = clientId
-        self.baseUrl = baseUrl
         self.apiService = apiService
-        getStripeCustomers(completion: nil)
-        
-//        // for payments
-//        STPPaymentConfiguration.shared().publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
-    }
-    
-    public func startListeningForAccount(userId: String) {
-        accountState.accept(.loading)
-        
-        let ref = Database.database().reference().child("stripeAccounts").child(userId)
-        ref.observe(.value) { [weak self] (snapshot) in
-            guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
-                self?.accountState.accept(.none)
-                return
+        // for payments
+        STPPaymentConfiguration.shared().publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
+
+        // status: no customer_id = none
+        // status: customer_id, no paymentContext = loading, should trigger creating payment context
+        // status: customer_id, paymentContext.loading = loading
+        // status: customer_id, !paymentContext.loading, paymentMethod is nil = Add a payment (none)
+        // status: customer_id, !paymentContext.loading, paymentMethod exists = View payments (ready)
+        disposeBag = DisposeBag()
+        print("StripeService: starting observing to update status")
+        self.status = Observable.combineLatest(paymentContext.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) {context, customerId, loading in
+            guard let customerId = customerId else {
+                return .none
             }
-            print("Account info: \(info)")
-            if let stripeUserId = info["stripeUserId"] as? String {
-                self?.accountState.accept(.account(stripeUserId))
+            guard let context = context else {
+                return .loading
+            }
+            if context.loading { // use actual loading value; paymentContextLoading is only used as a trigger
+                // customer exists, context exists, loading payment method
+                print("StripeService: status update: \(PaymentStatus.loading)")
+                return .loading
+            }
+            else if let paymentMethod = context.selectedPaymentMethod {
+                // customer exists, context exists, payment exists
+                print("StripeService: status update: \(PaymentStatus.ready)")
+                return .ready(paymentMethod: paymentMethod)
             } else {
-                self?.accountState.accept(.unknown)
+                // customer exists, context exists, no payment method
+                print("StripeService: status update: \(PaymentStatus.none)")
+                return .none
             }
         }
+        
+        // TODO: when customer ID is set, create context
+        super.init()
+        
+        getStripeCustomers(completion: nil)
+        self.customerId.filterNil().asObservable().subscribe()
     }
 
-    public func getOAuthUrl(_ userId: String) -> String? {
-        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        guard let clientId = clientId else { return nil }
-        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = baseUrl {
-            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
-        }
-        return url
-    }
-    
 /* MARK: - Payments */
     public func checkForPayment(for eventId: String, by playerId: String, completion:@escaping ((Bool)->Void)) {
         let ref = Database.database().reference().child("charges/events/\(eventId)")
