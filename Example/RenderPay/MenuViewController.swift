@@ -37,6 +37,8 @@ class MenuViewController: UIViewController {
     var connectService: StripeConnectService?
     var paymentService: StripePaymentService?
     
+    var paymentAccountString: String = "" // TODO: replace this with a viewModel?
+    
     let apiService = FirebaseAPIService()
 
     var menuItems: [MenuItem] = loggedOutMenu
@@ -49,14 +51,25 @@ class MenuViewController: UIViewController {
 
                 connectService = StripeConnectService(clientId: clientId, apiService: apiService)
                 connectService?.startListeningForAccount(userId: userId)
-                
-                paymentService = StripePaymentService(apiService: apiService)
-                
                 connectService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
-                    print("StripeService accountState changed: \(state)")
+                    print("StripeConnectService accountState changed: \(state)")
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
 
+                paymentService = StripePaymentService(apiService: apiService)
+                paymentService?.startListeningForAccount(userId: userId)
+                paymentService?.statusObserver.distinctUntilChanged( {$0 == $0} ).asObservable().subscribe(onNext: { [weak self] (status) in
+                    print("StripePaymentService status changed: \(status)")
+                    switch status {
+                    case .none:
+                        self?.paymentAccountString = "no payment account"
+                    case .loading:
+                        self?.paymentAccountString = "loading payment account..."
+                    case .ready(let method):
+                        self?.paymentAccountString = "Payment account: \(method?.label ?? "unnamed")"
+                    }
+                    self?.reloadTable()
+                }).disposed(by: disposeBag)
             }
         }
     }
@@ -79,23 +92,8 @@ class MenuViewController: UIViewController {
                 self?.userId = AuthService.currentUser?.uid
                 self?.menuItems = loggedInMenu
                 self?.reloadTable()
-                
-                self?.loadStripeCustomer()
             }
         }).disposed(by: disposeBag)
-    }
-
-    func loadStripeCustomer() {
-        guard let userId = self.userId else { return }
-        let ref = firRef.child("stripe_customers").child(userId).child("customer_id")
-        ref.observe(.value, with: { (snapshot) in
-            guard snapshot.exists(), let customerId = snapshot.value as? String else {
-                print("Error no customer loaded")
-                self.paymentService?.customerId.accept(nil)
-                return
-            }
-            self.paymentService?.customerId.accept(customerId)
-        })
     }
 
     func promptForLogin() {
@@ -176,6 +174,8 @@ extension MenuViewController: UITableViewDataSource {
             switch menuItems[indexPath.row] {
             case .stripeConnect:
                 cell.textLabel?.text = connectService?.accountState.value.description
+            case .stripePayment:
+                cell.textLabel?.text = paymentAccountString
             case .charge:
                 cell.textLabel?.text = menuItems[indexPath.row].rawValue
                 switch connectService?.accountState.value ?? .none {

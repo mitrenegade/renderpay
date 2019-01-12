@@ -36,9 +36,9 @@ public class StripePaymentService: NSObject {
     
     // payment method
     var paymentContext: Variable<STPPaymentContext?> = Variable(nil)
-    public var customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
-    fileprivate var paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
-    let status: Observable<PaymentStatus>
+    public let customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
+    fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
+    public let statusObserver: Observable<PaymentStatus>
 
     weak var hostController: UIViewController? {
         didSet {
@@ -62,7 +62,7 @@ public class StripePaymentService: NSObject {
         // status: customer_id, !paymentContext.loading, paymentMethod exists = View payments (ready)
         disposeBag = DisposeBag()
         print("StripeService: starting observing to update status")
-        self.status = Observable.combineLatest(paymentContext.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) {context, customerId, loading in
+        self.statusObserver = Observable.combineLatest(paymentContext.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) {context, customerId, loading in
             guard let customerId = customerId else {
                 return .none
             }
@@ -99,6 +99,18 @@ public class StripePaymentService: NSObject {
         paymentContextLoading.value = false
         paymentContext.value = nil
         hostController = nil
+    }
+    
+    public func startListeningForAccount(userId: String) {
+        let ref = firRef.child("stripe_customers").child(userId).child("customer_id")
+        ref.observe(.value, with: { [weak self] (snapshot) in
+            guard snapshot.exists(), let customerId = snapshot.value as? String else {
+                print("Error no customer loaded")
+                self?.customerId.accept(nil)
+                return
+            }
+            self?.customerId.accept(customerId)
+        })
     }
     
     func loadPayment() {
