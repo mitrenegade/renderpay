@@ -91,14 +91,14 @@ public class StripePaymentService: NSObject {
             }
         }
         
-        // TODO: when customer ID is set, create context
-        getStripeCustomers(completion: nil)
+        super.init()
         self.customerId.asObservable().filterNil().subscribe(onNext: { (customerId) in
             self.loadPayment()
+            self.getStripeCustomers(completion: nil)
         }).disposed(by: disposeBag)
     }
 
-    func resetOnLogout() {
+    public func resetOnLogout() {
         print("StripeService: resetting on logout")
         disposeBag = DisposeBag()
         customerId.value = nil
@@ -216,6 +216,41 @@ public class StripePaymentService: NSObject {
         } else {
             return nil
         }
+    }
+}
+
+// MARK: - STPPaymentContextDelegate
+extension StripePaymentService: STPPaymentContextDelegate {
+    public func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
+        print("StripeService: paymentContextDidChange. loading \(paymentContext.loading), selected payment \(String(describing: paymentContext.selectedPaymentMethod))")
+        
+        paymentContextLoading.value = paymentContext.loading
+//        self.notify(NotificationType.PaymentContextChanged, object: nil, userInfo: nil)
+    }
+    
+    public func paymentContext(_ paymentContext: STPPaymentContext,
+                        didCreatePaymentResult paymentResult: STPPaymentResult,
+                        completion: @escaping STPErrorBlock) {
+        print("StripeService: paymentContext didCreatePayment with result \(paymentResult)")
+    }
+    
+    
+    public func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
+        print("StripeService: paymentContext didFinish")
+        switch status {
+        case .error: break
+        //            self.showError(error)
+        case .success: break
+        //            self.showReceipt()
+        case .userCancellation:
+            return // Do nothing
+        }
+    }
+    
+    public func paymentContext(_ paymentContext: STPPaymentContext,
+                        didFailToLoadWithError error: Error) {
+        print("StripeService: paymentContext didFailToLoad error \(error)")
+        // Show the error to your user, etc.
     }
 }
 
