@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let path = filePath, let fileopts = FirebaseOptions.init(contentsOfFile: path) {
             FirebaseApp.configure(options: fileopts)
         }
-        let urlSuffix = TESTING ? "-dev" : "-c9cd7"
-        FirebaseAPIService.baseURL = URL(string: "https://us-central1-balizinha\(urlSuffix).cloudfunctions.net/")
+        let urlSuffix = TESTING ? "-dev" : "-drawing"
+        FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
 
         return true
     }

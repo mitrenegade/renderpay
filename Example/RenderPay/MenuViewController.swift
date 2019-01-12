@@ -40,7 +40,8 @@ class MenuViewController: UIViewController {
         didSet {
             if let userId = userId, oldValue == nil {
                 let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
-                stripeService = StripeService(clientId: userId, baseUrl: baseUrl)
+                let clientId = TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD
+                stripeService = StripeService(clientId: clientId, baseUrl: baseUrl)
                 stripeService?.startListeningForAccount(userId: userId)
                 
                 stripeService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
@@ -197,5 +198,16 @@ extension MenuViewController: UITableViewDelegate {
     
     func goToCharge() {
         // TODO: display a payment processor
+        guard let orgId = userId else { return }
+        let source = "tok_12345"
+        let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123", "chargeId": "abc"]
+        FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
+            print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
+            if let error = error as NSError? {
+                self?.simpleAlert("Create charge error", defaultMessage: nil, error: error)
+            } else {
+                self?.simpleAlert("Create charge results", message: "\(String(describing: result))")
+            }
+        }
     }
 }
