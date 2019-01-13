@@ -36,6 +36,7 @@ public enum PaymentStatus {
 
 public class StripePaymentService: NSObject {
     fileprivate var customers: [String: String] = [:]
+    fileprivate var userId: String?
     
     // payment method
     var paymentContext: Variable<STPPaymentContext?> = Variable(nil)
@@ -105,6 +106,7 @@ public class StripePaymentService: NSObject {
     }
     
     public func startListeningForAccount(userId: String) {
+        self.userId = userId
         let ref = firRef.child("stripeCustomers").child(userId).child("customerId")
         ref.observe(.value, with: { [weak self] (snapshot) in
             guard snapshot.exists(), let customerId = snapshot.value as? String else {
@@ -235,7 +237,7 @@ public class StripePaymentService: NSObject {
     public func createCustomer(userId: String, email: String, completion: ((String?, Error?)-> Void)?) {
         let params: [String: Any] = ["userId": userId, "email": email]
         apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { [weak self] (result, error) in
-            print("FirebaseAPIService: savePaymentInfo result \(String(describing: result)) error \(String(describing: error))")
+            print("FirebaseAPIService: createCustomer result \(String(describing: result)) error \(String(describing: error))")
             if let dict = result as? [String: Any], let customerId = dict["customerId"] as? String {
                 self?.customerId.accept(customerId)
                 completion?(customerId, error)
@@ -252,15 +254,19 @@ extension StripePaymentService: STPPaymentContextDelegate {
         print("StripeService: paymentContextDidChange. loading \(paymentContext.loading), selected payment \(String(describing: paymentContext.selectedPaymentMethod))")
         
         paymentContextLoading.value = paymentContext.loading
-//        self.notify(NotificationType.PaymentContextChanged, object: nil, userInfo: nil)
+        //        self.notify(NotificationType.PaymentContextChanged, object: nil, userInfo: nil)
+        // TODO: if user switches payment methods, call savePaymentInfo
     }
     
-    public func paymentContext(_ paymentContext: STPPaymentContext,
-                        didCreatePaymentResult paymentResult: STPPaymentResult,
-                        completion: @escaping STPErrorBlock) {
+    public func paymentContext(_ paymentContext: STPPaymentContext, didFailToLoadWithError error: Error) {
+        print("StripeService: paymentContext didFailToLoad error \(error)")
+        // Show the error to your user, etc.
+    }
+    
+    public func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPErrorBlock) {
         print("StripeService: paymentContext didCreatePayment with result \(paymentResult)")
+        
     }
-    
     
     public func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
         print("StripeService: paymentContext didFinish")
@@ -274,11 +280,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
         }
     }
     
-    public func paymentContext(_ paymentContext: STPPaymentContext,
-                        didFailToLoadWithError error: Error) {
-        print("StripeService: paymentContext didFailToLoad error \(error)")
-        // Show the error to your user, etc.
-    }
+
 }
 
 // MARK: - Ephemeral keys

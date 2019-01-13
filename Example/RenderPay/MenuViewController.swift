@@ -11,6 +11,7 @@ import RenderPay
 import RxSwift
 import RxCocoa
 import Balizinha
+import Stripe
 
 //
 //  MenuViewController.swift
@@ -60,8 +61,19 @@ class MenuViewController: UIViewController {
                 paymentService = StripePaymentService(apiService: apiService)
                 paymentService?.startListeningForAccount(userId: userId)
                 paymentService?.hostController = self
-                paymentService?.statusObserver.asObservable().subscribe(onNext: { [weak self] (status) in
+                paymentService?.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
                     self?.paymentStatus = status
+                    switch status {
+                    case .ready(paymentMethod: let method):
+                        print("paymentMethod updated")
+                        if let paymentMethod = method, let card = paymentMethod as? STPCard {
+                            // always write card to firebase since it's an internal call
+                            print("updated card")
+                            self?.paymentService?.savePaymentInfo(userId: userId, source: card.stripeID, last4: card.last4, label: card.label)
+                        }
+                    default:
+                        break
+                    }
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
             }
@@ -74,7 +86,7 @@ class MenuViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        navigationItem.title = "Balizinha Admin Menu"
+        navigationItem.title = "RenderPay Menu"
         
         AuthService.shared.startup()
         AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in
@@ -170,7 +182,7 @@ class MenuViewController: UIViewController {
             // show payment methods
             paymentService?.shouldShowPaymentController()
         case .ready(let paymentMethod):
-            // TODO: update payment method or show it
+            // TODO: change payment method or show it
             break
         }
     }
@@ -240,9 +252,9 @@ extension MenuViewController: UITableViewDelegate {
         case .stripePayment:
             refreshPayment()
         case .charge:
-            switch connectService?.accountState.value ?? .none {
-            case .account:
-                goToCharge()
+            switch (connectService?.accountState.value ?? .none, paymentStatus) {
+            case (.account(let connectId), .ready(let method)):
+                goToCharge(connectId: connectId, paymentMethod: method)
             default:
                 simpleAlert("Cannot test charges", message: "A stripe account must be connected first")
             }
@@ -254,11 +266,11 @@ extension MenuViewController: UITableViewDelegate {
         }
     }
     
-    func goToCharge() {
+    func goToCharge(connectId: String?, paymentMethod: STPPaymentMethod?) {
         // TODO: display a payment processor
-        guard let orgId = userId else { return }
+        guard let orgId = userId, let connectId = connectId, let method = paymentMethod else { return }
         let source = "tok_12345"
-        let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123", "chargeId": "abc"]
+        let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123"]
         FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
             if let error = error as NSError? {
