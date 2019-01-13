@@ -13,13 +13,16 @@ import Balizinha
 import Stripe
 
 public enum PaymentStatus {
-    case none // no customer_id exists
-    case loading // customer_id exists, loading payment
+    case loading
+    case noCustomer
+    case noPaymentMethod // no customer_id exists
     case ready(paymentMethod: STPPaymentMethod?)
     
     public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
         switch (lhs, rhs) {
-        case (.none, .none):
+        case (.noCustomer, .noCustomer):
+            return true
+        case (.noPaymentMethod, .noPaymentMethod):
             return true
         case (.loading, .loading):
             return true
@@ -40,7 +43,7 @@ public class StripePaymentService: NSObject {
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
 
-    weak var hostController: UIViewController? {
+    public weak var hostController: UIViewController? {
         didSet {
             self.paymentContext.value?.hostViewController = hostController
         }
@@ -64,7 +67,7 @@ public class StripePaymentService: NSObject {
         print("StripeService: starting observing to update status")
         self.statusObserver = Observable.combineLatest(paymentContext.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) {context, customerId, loading in
             guard let customerId = customerId else {
-                return .none
+                return .noCustomer
             }
             guard let context = context else {
                 return .loading
@@ -80,8 +83,8 @@ public class StripePaymentService: NSObject {
                 return .ready(paymentMethod: paymentMethod)
             } else {
                 // customer exists, context exists, no payment method
-                print("StripeService: status update: \(PaymentStatus.none)")
-                return .none
+                print("StripeService: status update: \(PaymentStatus.noPaymentMethod)")
+                return .noPaymentMethod
             }
         }
         
@@ -191,6 +194,11 @@ public class StripePaymentService: NSObject {
         }
     }
     
+    public func shouldShowPaymentController() {
+        if let context = paymentContext.value {
+            context.presentPaymentMethodsViewController()
+        }
+    }
 /* MARK: - Customers */
     public func getStripeCustomers(completion: ((_ results: [String: String]) -> Void)?) {
         let queryRef = Database.database().reference().child("stripe_customers")
@@ -221,6 +229,19 @@ public class StripePaymentService: NSObject {
             return playerId
         } else {
             return nil
+        }
+    }
+    
+    public func createCustomer(userId: String, email: String, completion: ((String?, Error?)-> Void)?) {
+        let params: [String: Any] = ["userId": userId, "email": email]
+        apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { (result, error) in
+            print("FirebaseAPIService: savePaymentInfo result \(result) error \(error)")
+            if let customerId = result["customerId"] as? String {
+                self?.customerId.accept(customerId)
+                completion?(customerId, error)
+            } else {
+                completion?(nil, error)
+            }
         }
     }
 }
@@ -264,7 +285,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
 extension StripePaymentService: STPEphemeralKeyProvider {
     public func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         guard let customerId = self.customerId.value else { return }
-        let params: [String: Any] = ["api_version": apiVersion, "customer_id": customerId]
+        let params: [String: Any] = ["api_version": apiVersion, "customerId": customerId]
         let method = "POST"
         apiService?.cloudFunction(functionName: "ephemeralKeys", method: method, params: params) { (result, error) in
             completion(result as? [AnyHashable: Any], error)

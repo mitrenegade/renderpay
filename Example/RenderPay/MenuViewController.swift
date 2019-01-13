@@ -37,11 +37,12 @@ class MenuViewController: UIViewController {
     var connectService: StripeConnectService?
     var paymentService: StripePaymentService?
     
-    var paymentAccountString: String = "" // TODO: replace this with a viewModel?
+    var paymentStatus: PaymentStatus = .loading
     
     let apiService = FirebaseAPIService()
 
     var menuItems: [MenuItem] = loggedOutMenu
+    var email: String?
     var userId: String? {
         didSet {
             if let userId = userId, oldValue == nil {
@@ -58,16 +59,9 @@ class MenuViewController: UIViewController {
 
                 paymentService = StripePaymentService(apiService: apiService)
                 paymentService?.startListeningForAccount(userId: userId)
+                paymentService?.hostController = self
                 paymentService?.statusObserver.distinctUntilChanged( {$0 == $0} ).asObservable().subscribe(onNext: { [weak self] (status) in
-                    print("StripePaymentService status changed: \(status)")
-                    switch status {
-                    case .none:
-                        self?.paymentAccountString = "no payment account"
-                    case .loading:
-                        self?.paymentAccountString = "loading payment account..."
-                    case .ready(let method):
-                        self?.paymentAccountString = "Payment account: \(method?.label ?? "unnamed")"
-                    }
+                    self?.paymentStatus = status
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
             }
@@ -89,6 +83,7 @@ class MenuViewController: UIViewController {
                 self?.reloadTable()
                 self?.promptForLogin()
             } else {
+                self?.email = AuthService.currentUser?.email
                 self?.userId = AuthService.currentUser?.uid
                 self?.menuItems = loggedInMenu
                 self?.reloadTable()
@@ -155,7 +150,29 @@ class MenuViewController: UIViewController {
     }
     
     func refreshPayment() {
-        
+        switch paymentStatus {
+        case .loading:
+            break
+        case .noCustomer:
+            guard let userId = userId, let email = email else {
+                simpleAlert("Cannot create customer", message: "userId and email must exist for user")
+                return
+            }
+            paymentService?.createCustomer(userId: userId, email: email, completion: { [weak self] (customerId, error) in
+                if let error = error as? NSError {
+                    self?.simpleAlert("Could not create customer", defaultMessage: "There was an error", error: error)
+                } else {
+                    print("CustomerId created: \(customerId)")
+                    
+                }
+            }))
+        case .noPaymentMethod:
+            // show payment methods
+            paymentService?.shouldShowPaymentController()
+        case .ready(let paymentMethod):
+            // TODO: update payment method or show it
+            break
+        }
     }
 }
 
@@ -175,6 +192,18 @@ extension MenuViewController: UITableViewDataSource {
             case .stripeConnect:
                 cell.textLabel?.text = connectService?.accountState.value.description
             case .stripePayment:
+                print("StripePaymentService status changed: \(paymentStatus)")
+                let paymentAccountString: String
+                switch paymentStatus {
+                case .loading:
+                    paymentAccountString = "Loading..."
+                case .noCustomer:
+                    paymentAccountString = "No customer found"
+                case .noPaymentMethod:
+                    paymentAccountString = "Click to add payment method"
+                case .ready(let method):
+                    paymentAccountString = "Payment account: \(method?.label ?? "unnamed")"
+                }
                 cell.textLabel?.text = paymentAccountString
             case .charge:
                 cell.textLabel?.text = menuItems[indexPath.row].rawValue
