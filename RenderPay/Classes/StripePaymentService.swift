@@ -105,7 +105,7 @@ public class StripePaymentService: NSObject {
     }
     
     public func startListeningForAccount(userId: String) {
-        let ref = firRef.child("stripe_customers").child(userId).child("customer_id")
+        let ref = firRef.child("stripeCustomers").child(userId).child("customerId")
         ref.observe(.value, with: { [weak self] (snapshot) in
             guard snapshot.exists(), let customerId = snapshot.value as? String else {
                 print("Error no customer loaded")
@@ -234,9 +234,9 @@ public class StripePaymentService: NSObject {
     
     public func createCustomer(userId: String, email: String, completion: ((String?, Error?)-> Void)?) {
         let params: [String: Any] = ["userId": userId, "email": email]
-        apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { (result, error) in
-            print("FirebaseAPIService: savePaymentInfo result \(result) error \(error)")
-            if let customerId = result["customerId"] as? String {
+        apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { [weak self] (result, error) in
+            print("FirebaseAPIService: savePaymentInfo result \(String(describing: result)) error \(String(describing: error))")
+            if let dict = result as? [String: Any], let customerId = dict["customerId"] as? String {
                 self?.customerId.accept(customerId)
                 completion?(customerId, error)
             } else {

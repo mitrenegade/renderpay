@@ -60,7 +60,7 @@ class MenuViewController: UIViewController {
                 paymentService = StripePaymentService(apiService: apiService)
                 paymentService?.startListeningForAccount(userId: userId)
                 paymentService?.hostController = self
-                paymentService?.statusObserver.distinctUntilChanged( {$0 == $0} ).asObservable().subscribe(onNext: { [weak self] (status) in
+                paymentService?.statusObserver.asObservable().subscribe(onNext: { [weak self] (status) in
                     self?.paymentStatus = status
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
@@ -159,13 +159,13 @@ class MenuViewController: UIViewController {
                 return
             }
             paymentService?.createCustomer(userId: userId, email: email, completion: { [weak self] (customerId, error) in
-                if let error = error as? NSError {
+                if let error = error as NSError? {
                     self?.simpleAlert("Could not create customer", defaultMessage: "There was an error", error: error)
-                } else {
+                } else if let customerId = customerId {
                     print("CustomerId created: \(customerId)")
-                    
+                    // let customerId BehaviorRelay handle updates
                 }
-            }))
+            })
         case .noPaymentMethod:
             // show payment methods
             paymentService?.shouldShowPaymentController()
