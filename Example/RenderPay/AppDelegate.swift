@@ -12,6 +12,7 @@ import Firebase
 import FirebaseMessaging
 import RenderPay
 import Balizinha
+import Stripe
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -29,6 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let urlSuffix = TESTING ? "-dev" : "-drawing"
         FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
+
+        // stripe
+        // for payments
+        let config = STPPaymentConfiguration.shared()
+        config.publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
 
         return true
     }

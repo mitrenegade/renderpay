@@ -66,9 +66,13 @@ class MenuViewController: UIViewController {
                     switch status {
                     case .ready(paymentMethod: let method):
                         print("paymentMethod updated")
-                        if let paymentMethod = method, let card = paymentMethod as? STPCard {
+                        guard let paymentMethod = method else { break }
+                        if let source = paymentMethod as? STPSource, let last4 = source.cardDetails?.last4 {
+                            print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
+                            self?.paymentService?.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
+                        } else if let card = paymentMethod as? STPCard {
                             // always write card to firebase since it's an internal call
-                            print("updated card")
+                            print("updated card \(card.stripeID)")
                             self?.paymentService?.savePaymentInfo(userId: userId, source: card.stripeID, last4: card.last4, label: card.label)
                         }
                     default:
@@ -182,7 +186,9 @@ class MenuViewController: UIViewController {
             // show payment methods
             paymentService?.shouldShowPaymentController()
         case .ready(let paymentMethod):
-            // TODO: change payment method or show it
+            // change payment method or show it
+            // show payment methods
+            paymentService?.shouldShowPaymentController()
             break
         }
     }
@@ -269,7 +275,8 @@ extension MenuViewController: UITableViewDelegate {
     func goToCharge(connectId: String?, paymentMethod: STPPaymentMethod?) {
         // TODO: display a payment processor
         guard let orgId = userId, let connectId = connectId, let method = paymentMethod else { return }
-        let source = "tok_12345"
+        guard let card = paymentMethod as? STPCard else { return }
+        let source = "cus_EKdOrItT8jqdDO" //card.stripeID
         let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123"]
         FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")

@@ -27,7 +27,13 @@ public enum PaymentStatus {
         case (.loading, .loading):
             return true
         case (.ready(let p1), .ready(let p2)):
-            return p1?.label == p2?.label
+            if let source1 = p1 as? STPSource, let source2 = p2 as? STPSource {
+                return source1.stripeID == source2.stripeID
+            } else if let card1 = p1 as? STPCard, let card2 = p2 as? STPCard {
+                return card1.stripeID == card2.stripeID
+            } else {
+                return false
+            }
         default:
             return false
         }
@@ -57,7 +63,8 @@ public class StripePaymentService: NSObject {
         // for connect
         self.apiService = apiService
         // for payments
-        STPPaymentConfiguration.shared().publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
+        let config = STPPaymentConfiguration.shared()
+        config.createCardSources = true;
 
         // status: no customer_id = none
         // status: customer_id, no paymentContext = loading, should trigger creating payment context
