@@ -26,10 +26,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>io.renderapps.balizinha</string>
+			<string>Rollcall</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>panna</string>
+				<string>rollcall</string>
 			</array>
 		</dict>
 	</array>

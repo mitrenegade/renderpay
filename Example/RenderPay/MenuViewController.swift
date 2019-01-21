@@ -275,8 +275,7 @@ extension MenuViewController: UITableViewDelegate {
     func goToCharge(connectId: String?, paymentMethod: STPPaymentMethod?) {
         // TODO: display a payment processor
         guard let orgId = userId, let connectId = connectId, let method = paymentMethod else { return }
-        guard let card = paymentMethod as? STPCard else { return }
-        let source = "cus_EKdOrItT8jqdDO" //card.stripeID
+        guard let source = (paymentMethod as? STPSource)?.stripeID else { return }
         let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123"]
         FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
