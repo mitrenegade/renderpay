@@ -59,7 +59,7 @@ public class StripeConnectService {
     public func startListeningForAccount(userId: String) {
         accountState.accept(.loading)
         
-        let ref = Database.database().reference().child("stripeAccounts").child(userId)
+        let ref = Database.database().reference().child("stripeConnectAccounts").child(userId)
         ref.observe(.value) { [weak self] (snapshot) in
             guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
                 self?.accountState.accept(.none)

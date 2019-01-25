@@ -259,8 +259,13 @@ extension MenuViewController: UITableViewDelegate {
             refreshPayment()
         case .charge:
             switch (connectService?.accountState.value ?? .none, paymentStatus) {
-            case (.account(let connectId), .ready(let method)):
-                goToCharge(connectId: connectId, paymentMethod: method)
+            case (.account, .ready):
+                // connectId and payment source are found by the server
+                if let userId = userId {
+                    goToCharge(customerId: userId, connectId: userId)
+                } else {
+                    simpleAlert("Cannot test charge", message: "No userId found")
+                }
             default:
                 simpleAlert("Cannot test charges", message: "A stripe account must be connected first")
             }
@@ -272,12 +277,10 @@ extension MenuViewController: UITableViewDelegate {
         }
     }
     
-    func goToCharge(connectId: String?, paymentMethod: STPPaymentMethod?) {
-        // TODO: display a payment processor
-        guard let orgId = userId, let connectId = connectId, let method = paymentMethod else { return }
-        guard let source = (paymentMethod as? STPSource)?.stripeID else { return }
-        let params: [String: Any] = ["amount": 100, "orgId": orgId, "source": source, "eventId": "123"]
+    func goToCharge(customerId: String, connectId: String) {
+        let params: [String: Any] = ["amount": 100, "customerId": customerId, "connectId": connectId, "eventId": "456"]
         FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
+//        FirebaseAPIService().cloudFunction(functionName: "createStripeCharge", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
             if let error = error as NSError? {
                 self?.simpleAlert("Create charge error", defaultMessage: nil, error: error)
