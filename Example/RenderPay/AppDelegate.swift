@@ -12,6 +12,7 @@ import Firebase
 import FirebaseMessaging
 import RenderPay
 import Balizinha
+import Stripe
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,11 +28,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let path = filePath, let fileopts = FirebaseOptions.init(contentsOfFile: path) {
             FirebaseApp.configure(options: fileopts)
         }
-        let urlSuffix = TESTING ? "-dev" : "-c9cd7"
-        FirebaseAPIService.baseURL = URL(string: "https://us-central1-balizinha\(urlSuffix).cloudfunctions.net/")
+        let urlSuffix = TESTING ? "-dev" : "-drawing"
+        FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
 
-        let clientId = TESTING ? CLIENT_ID_DEV : CLIENT_ID_PROD
-        StripeService.clientId = clientId
+        // stripe
+        // for payments
+        let config = STPPaymentConfiguration.shared()
+        config.publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
 
         return true
     }
@@ -59,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true), components.scheme == "panna" {
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true), components.scheme == "rollcall" {
             var pathComponents = components.path.components(separatedBy: "/")
             print("url: \(url)\ncomponents: \(components)\npath: \(pathComponents)")
         }
