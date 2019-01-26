@@ -4,7 +4,7 @@ const app = require('express')
 
 const config = functions.config().dev
 
-const stripe = require('./stripe1.1')
+const stripe = require('./stripe')
 
 admin.initializeApp(functions.config().firebase);
 
