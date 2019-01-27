@@ -28,7 +28,7 @@ Payment library using Stripe
   s.source           = { :git => 'git@bitbucket.org:renderapps/renderpay.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
   s.swift_version = '4.1'
   s.static_framework = true
   s.source_files = 'RenderPay/Classes/**/*'
@@ -47,6 +47,7 @@ Payment library using Stripe
   s.dependency 'Firebase/RemoteConfig'
   s.dependency 'RxSwift'
   s.dependency 'RxCocoa'
-  s.dependency 'Balizinha'
+  s.dependency 'RxOptional'
+  s.dependency 'RenderCloud', '~> 1.0.1'
   s.dependency 'Stripe'
 end
