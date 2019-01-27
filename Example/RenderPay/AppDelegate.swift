@@ -31,6 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let urlSuffix = TESTING ? "-dev" : "-drawing"
         FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
 
+        FirebaseAPIService.getUniqueId { (id) in
+            print("UniqueId generated from cloud: \(String(describing: id))")
+        }
+
         // stripe
         // for payments
         let config = STPPaymentConfiguration.shared()

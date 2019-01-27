@@ -8,9 +8,10 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxOptional
 import FirebaseDatabase
-import Balizinha
 import Stripe
+import RenderCloud
 
 public enum PaymentStatus {
     case loading
@@ -114,6 +115,7 @@ public class StripePaymentService: NSObject {
     
     public func startListeningForAccount(userId: String) {
         self.userId = userId
+        let firRef = Database.database().reference()
         let ref = firRef.child("stripeCustomers").child(userId).child("customerId")
         ref.observe(.value, with: { [weak self] (snapshot) in
             guard snapshot.exists(), let customerId = snapshot.value as? String else {

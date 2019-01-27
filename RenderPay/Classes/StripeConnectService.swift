@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import FirebaseDatabase
-import Balizinha
+import RenderCloud
 
 public enum AccountState: Equatable {
     case unknown
