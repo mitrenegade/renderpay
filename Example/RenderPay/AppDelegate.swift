@@ -13,6 +13,7 @@ import FirebaseMessaging
 import RenderPay
 import Balizinha
 import Stripe
+import RenderCloud
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,10 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let urlSuffix = TESTING ? "-dev" : "-drawing"
         FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
-
-        FirebaseAPIService.getUniqueId { (id) in
-            print("UniqueId generated from cloud: \(String(describing: id))")
-        }
 
         // stripe
         // for payments
