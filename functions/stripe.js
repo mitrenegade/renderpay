@@ -5,7 +5,7 @@ const request = require('request')
 const config = functions.config().dev
 const stripe = require('stripe')(config.stripe.token)
 
-exports.ephemeralKeys = functions.https.onRequest((req, res) => {
+exports.ephemeralKeys = function(req, res, exports) {
 //exports.ephemeralKeys = function(req, res, stripe) {
     let stripe_version = req.body.api_version
     let customerId = req.body.customerId
@@ -23,9 +23,9 @@ exports.ephemeralKeys = functions.https.onRequest((req, res) => {
     }).catch((err) => {
         return res.status(500).json({"error": err});
     })
-})
+}
 
-exports.validateStripeCustomer = function(req, res) {
+exports.validateStripeCustomer = function(req, res, exports) {
 //exports.validateStripeCustomer = function(req, res, exports, admin, stripe) {
     const userId = req.body.userId
     const email = req.body.email
@@ -73,7 +73,7 @@ createStripeCustomer = function(email, uid) {
     })
 }
 
-exports.savePaymentInfo = function(req, res) {
+exports.savePaymentInfo = function(req, res, exports) {
 //exports.savePaymentInfo = function(req, res, admin) {
     const userId = req.body.userId
     const source = req.body.source
@@ -102,7 +102,7 @@ exports.savePaymentInfo = function(req, res) {
 
 /*** Stripe connect ***/
 // https://stackoverflow.com/questions/52493606/stripe-connect-firebase-functions
-exports.stripeConnectRedirectHandler = function(req, res) {
+exports.stripeConnectRedirectHandler = function(req, res, exports) {
     // the url will look like: 
     // http://us-central1-balizinha-dev.cloudfunctions.net/stripeConnectRedirectHandler?scope=read_write&code={AUTHORIZATION_CODE}
     console.log("StripeConnectRedirectHandler with query: " + JSON.stringify(req.query))
@@ -145,7 +145,7 @@ storeStripeConnectTokens = function(userId, stripeUserId, accessToken, refreshTo
     return admin.database().ref(ref).set(params)
 }
 
-exports.getConnectAccountInfo = function(req, res) {
+exports.getConnectAccountInfo = function(req, res, exports) {
 	var accountId = req.query.accountId
 	if (accountId == undefined) {
 		console.log("getConnectAccountInfo: No Stripe account provided")
@@ -174,7 +174,7 @@ exports.getConnectAccountInfo = function(req, res) {
  * chargeId: String, client-generated
  * source: payment token from stripe
  */
-exports.createStripeConnectCharge = function(req, res) {
+exports.createStripeConnectCharge = function(req, res, exports) {
     // Create a charge using the pushId as the idempotency key, protecting against double charges 
     const amount = req.body.amount;
     const currency = 'USD'

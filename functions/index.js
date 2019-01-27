@@ -23,26 +23,26 @@ exports.createUniqueId = function() {
 // STRIPE //////////////////////////////////////////////////////////////////////////////////
 // http functions
 exports.ephemeralKeys = functions.https.onRequest((req, res) => {
-    return stripe.ephemeralKeys(req, res)
+    return stripe.ephemeralKeys(req, res, exports)
 })
 
 exports.validateStripeCustomer = functions.https.onRequest((req, res) => {
-    return stripe.validateStripeCustomer(req, res)
+    return stripe.validateStripeCustomer(req, res, exports)
 })
 
 exports.savePaymentInfo = functions.https.onRequest((req, res) => {
-    return stripe.savePaymentInfo(req, res)
+    return stripe.savePaymentInfo(req, res, exports)
 })
 
 exports.stripeConnectRedirectHandler = functions.https.onRequest((req, res) => {
-    return stripe.stripeConnectRedirectHandler(req, res)
+    return stripe.stripeConnectRedirectHandler(req, res, exports)
 })
 
 exports.getConnectAccountInfo = functions.https.onRequest((req, res) => {
-    return stripe.getConnectAccountInfo(req, res)
+    return stripe.getConnectAccountInfo(req, res, exports)
 })
 
 exports.createStripeConnectCharge = functions.https.onRequest((req, res) => {
-    return stripe.createStripeConnectCharge(req, res)
+    return stripe.createStripeConnectCharge(req, res, exports)
 })
 
