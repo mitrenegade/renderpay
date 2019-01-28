@@ -10,5 +10,8 @@ let TESTING: Bool = true
 let STRIPE_CLIENT_ID_DEV = "ca_ECowy0cLCEaImKunoIsUfm2n4EbhxrMO"
 let STRIPE_CLIENT_ID_PROD = "ca_ECowdoBb2DfRFlBMQSZ2jT4SSXAUJ6Lx"
 
+let STRIPE_PUBLISHABLE_KEY_DEV = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
+let STRIPE_PUBLISHABLE_KEY_PROD = "pk_live_IziZ9EDk1374oI3rXjEciLBG"
+
 let FIREBASE_URL_DEV = "https://us-central1-rollcall-and-random-dev.cloudfunctions.net"
 let FIREBASE_URL_PROD = "https://us-central1-rollcall-and-random-drawing.cloudfunctions.net"

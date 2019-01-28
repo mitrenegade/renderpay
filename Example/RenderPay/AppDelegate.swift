@@ -29,13 +29,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let path = filePath, let fileopts = FirebaseOptions.init(contentsOfFile: path) {
             FirebaseApp.configure(options: fileopts)
         }
-        let urlSuffix = TESTING ? "-dev" : "-drawing"
-        FirebaseAPIService.baseURL = URL(string: "https://us-central1-rollcall-and-random\(urlSuffix).cloudfunctions.net/")
+        let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
+        FirebaseAPIService.baseURL = URL(string: baseUrl)
 
         // stripe
         // for payments
         let config = STPPaymentConfiguration.shared()
-        config.publishableKey = "pk_test_YYNWvzYJi3bTyOJi2SNK3IkE"
+        config.publishableKey = TESTING ? STRIPE_PUBLISHABLE_KEY_DEV : STRIPE_PUBLISHABLE_KEY_PROD
 
         return true
     }
