@@ -57,6 +57,9 @@ public class StripePaymentService: NSObject {
         }
     }
     
+    // customers
+    public let customersDidLoad: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: false)
+    
     fileprivate var disposeBag: DisposeBag
 
     public var apiService: CloudAPIService?
@@ -100,8 +103,9 @@ public class StripePaymentService: NSObject {
         super.init()
         self.customerId.asObservable().filterNil().subscribe(onNext: { (customerId) in
             self.loadPayment()
-            self.getStripeCustomers(completion: nil)
         }).disposed(by: disposeBag)
+
+        self.getStripeCustomers(completion: nil)
     }
 
     public func resetOnLogout() {
@@ -212,7 +216,8 @@ public class StripePaymentService: NSObject {
     }
 /* MARK: - Customers */
     public func getStripeCustomers(completion: ((_ results: [String: String]) -> Void)?) {
-        let queryRef = Database.database().reference().child("stripe_customers")
+        // TODO: Balizinha must use stripe_customers until fully migrated
+        let queryRef = Database.database().reference().child("stripeCustomers")
         queryRef.observeSingleEvent(of: .value) { [weak self] (snapshot) in
             guard snapshot.exists() else {
                 return
@@ -228,6 +233,7 @@ public class StripePaymentService: NSObject {
                     }
                 }
             }
+            self.customersDidLoad.accept(true)
             completion?(self.customers)
         }
     }
