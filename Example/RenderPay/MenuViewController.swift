@@ -36,33 +36,26 @@ fileprivate let loggedOutMenu: [MenuItem] = [.login]
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    var connectService: StripeConnectService?
-    var paymentService: StripePaymentService?
+    var connectService: StripeConnectService!
+    var paymentService: StripePaymentService!
+    let apiService: FirebaseAPIService = FirebaseAPIService()
     
     var paymentStatus: PaymentStatus = .loading
     
-    let apiService = FirebaseAPIService()
-
     var menuItems: [MenuItem] = loggedOutMenu
     var email: String?
     var userId: String? {
         didSet {
             if let userId = userId, oldValue == nil {
-                let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
-                let clientId = TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD
-                FirebaseAPIService.baseURL = URL(string: baseUrl)
-
-                connectService = StripeConnectService(clientId: clientId, apiService: apiService)
-                connectService?.startListeningForAccount(userId: userId)
-                connectService?.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
+                connectService.startListeningForAccount(userId: userId)
+                connectService.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
                     print("StripeConnectService accountState changed: \(state)")
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
 
-                paymentService = StripePaymentService(apiService: apiService)
-                paymentService?.startListeningForAccount(userId: userId)
-                paymentService?.hostController = self
-                paymentService?.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
+                paymentService.startListeningForAccount(userId: userId)
+                paymentService.hostController = self
+                paymentService.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
                     self?.paymentStatus = status
                     switch status {
                     case .ready(paymentMethod: let method):
@@ -70,11 +63,11 @@ class MenuViewController: UIViewController {
                         guard let paymentMethod = method else { break }
                         if let source = paymentMethod as? STPSource, let last4 = source.cardDetails?.last4 {
                             print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
-                            self?.paymentService?.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
+                            self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
                         } else if let card = paymentMethod as? STPCard {
                             // always write card to firebase since it's an internal call
                             print("updated card \(card.stripeID)")
-                            self?.paymentService?.savePaymentInfo(userId: userId, source: card.stripeID, last4: card.last4, label: card.label)
+                            self?.paymentService.savePaymentInfo(userId: userId, source: card.stripeID, last4: card.last4, label: card.label)
                         }
                     default:
                         break
@@ -92,6 +85,10 @@ class MenuViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.title = "RenderPay Menu"
+        
+        connectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: apiService)
+        paymentService = StripePaymentService(apiService: apiService)
+
         
         AuthService.shared.startup()
         AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in
@@ -162,7 +159,7 @@ class MenuViewController: UIViewController {
     }
     
     func connectToStripe() {
-        guard let userId = userId, let urlString = connectService?.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
+        guard let userId = userId, let urlString = connectService.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.openURL(url)
     }
     
@@ -175,7 +172,7 @@ class MenuViewController: UIViewController {
                 simpleAlert("Cannot create customer", message: "userId and email must exist for user")
                 return
             }
-            paymentService?.createCustomer(userId: userId, email: email, completion: { [weak self] (customerId, error) in
+            paymentService.createCustomer(userId: userId, email: email, completion: { [weak self] (customerId, error) in
                 if let error = error as NSError? {
                     self?.simpleAlert("Could not create customer", defaultMessage: "There was an error", error: error)
                 } else if let customerId = customerId {
@@ -185,11 +182,11 @@ class MenuViewController: UIViewController {
             })
         case .noPaymentMethod:
             // show payment methods
-            paymentService?.shouldShowPaymentController()
+            paymentService.shouldShowPaymentController()
         case .ready(let paymentMethod):
             // change payment method or show it
             // show payment methods
-            paymentService?.shouldShowPaymentController()
+            paymentService.shouldShowPaymentController()
             break
         }
     }
@@ -209,7 +206,7 @@ extension MenuViewController: UITableViewDataSource {
         if indexPath.row < menuItems.count {
             switch menuItems[indexPath.row] {
             case .stripeConnect:
-                cell.textLabel?.text = connectService?.accountState.value.description
+                cell.textLabel?.text = connectService.accountState.value.description
             case .stripePayment:
                 print("StripePaymentService status changed: \(paymentStatus)")
                 let paymentAccountString: String
@@ -226,7 +223,7 @@ extension MenuViewController: UITableViewDataSource {
                 cell.textLabel?.text = paymentAccountString
             case .charge:
                 cell.textLabel?.text = menuItems[indexPath.row].rawValue
-                switch connectService?.accountState.value ?? .none {
+                switch connectService.accountState.value ?? .none {
                 case .account:
                     cell.textLabel?.alpha = 1
                 default:
@@ -259,7 +256,7 @@ extension MenuViewController: UITableViewDelegate {
         case .stripePayment:
             refreshPayment()
         case .charge:
-            switch (connectService?.accountState.value ?? .none, paymentStatus) {
+            switch (connectService.accountState.value ?? .none, paymentStatus) {
             case (.account, .ready):
                 // connectId and payment source are found by the server
                 if let userId = userId {
@@ -280,8 +277,7 @@ extension MenuViewController: UITableViewDelegate {
     
     func goToCharge(customerId: String, connectId: String) {
         let params: [String: Any] = ["amount": 100, "customerId": customerId, "connectId": connectId, "eventId": "456"]
-        FirebaseAPIService().cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
-//        FirebaseAPIService().cloudFunction(functionName: "createStripeCharge", params: params) { [weak self] (result, error) in
+        apiService.cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
             if let error = error as NSError? {
                 self?.simpleAlert("Create charge error", defaultMessage: nil, error: error)
