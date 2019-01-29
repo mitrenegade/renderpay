@@ -2,8 +2,10 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const request = require('request')
 
-const config = functions.config().dev
-const stripe = require('stripe')(config.stripe.token)
+const globals = require('./globals')
+
+const stripeToken = globals.stripeToken
+const stripe = require('stripe')(stripeToken)
 
 exports.ephemeralKeys = function(req, res, exports) {
 //exports.ephemeralKeys = function(req, res, stripe) {
@@ -37,7 +39,7 @@ exports.validateStripeCustomer = function(req, res, exports) {
         return res.status(500).json({"error": "Could not validate Stripe customer: empty email"})
     }
 
-    var customerRef = `/stripeCustomers/${userId}/customerId`
+    var customerRef = `/stripeCustomers/${userId}/customer_id`
     return admin.database().ref(customerRef).once('value')
     .then(snapshot => {
         if (!snapshot.exists()) {
@@ -48,7 +50,7 @@ exports.validateStripeCustomer = function(req, res, exports) {
             return snapshot.val()
         }
     }).then(customer => {
-        return res.status(200).json({"customerId": customer})
+        return res.status(200).json({"customer_id": customer})
     })
 }
 
@@ -114,7 +116,7 @@ exports.stripeConnectRedirectHandler = function(req, res, exports) {
     request.post(url,
         { 
             form: { 
-                "client_secret": 'sk_test_UeupqMc6Nu10Jlnqt2tCXroj',
+                "client_secret": stripeToken,
                 "code": code,
                 "grant_type": "authorization_code"
             },

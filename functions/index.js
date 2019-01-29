@@ -1,10 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const app = require('express')
-
-const config = functions.config().dev
-
-const stripe = require('./stripe')
+const globals = require('./globals')
+const stripe1_0 = require('./stripe1_0')
 
 admin.initializeApp(functions.config().firebase);
 
@@ -53,26 +51,26 @@ exports.createUniqueId = function() {
 // STRIPE //////////////////////////////////////////////////////////////////////////////////
 // http functions
 exports.ephemeralKeys = functions.https.onRequest((req, res) => {
-    return stripe.ephemeralKeys(req, res, exports)
+    return stripe1_0.ephemeralKeys(req, res, exports)
 })
 
 exports.validateStripeCustomer = functions.https.onRequest((req, res) => {
-    return stripe.validateStripeCustomer(req, res, exports)
+    return stripe1_0.validateStripeCustomer(req, res, exports)
 })
 
 exports.savePaymentInfo = functions.https.onRequest((req, res) => {
-    return stripe.savePaymentInfo(req, res, exports)
+    return stripe1_0.savePaymentInfo(req, res, exports)
 })
 
 exports.stripeConnectRedirectHandler = functions.https.onRequest((req, res) => {
-    return stripe.stripeConnectRedirectHandler(req, res, exports)
+    return stripe1_0.stripeConnectRedirectHandler(req, res, exports)
 })
 
 exports.getConnectAccountInfo = functions.https.onRequest((req, res) => {
-    return stripe.getConnectAccountInfo(req, res, exports)
+    return stripe1_0.getConnectAccountInfo(req, res, exports)
 })
 
 exports.createStripeConnectCharge = functions.https.onRequest((req, res) => {
-    return stripe.createStripeConnectCharge(req, res, exports)
+    return stripe1_0.createStripeConnectCharge(req, res, exports)
 })
 

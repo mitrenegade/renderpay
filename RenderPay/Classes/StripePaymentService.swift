@@ -120,7 +120,7 @@ public class StripePaymentService: NSObject {
     public func startListeningForAccount(userId: String) {
         self.userId = userId
         let firRef = Database.database().reference()
-        let ref = firRef.child("stripeCustomers").child(userId).child("customerId")
+        let ref = firRef.child("stripeCustomers").child(userId).child("customer_id")
         ref.observe(.value, with: { [weak self] (snapshot) in
             guard snapshot.exists(), let customerId = snapshot.value as? String else {
                 print("Error no customer loaded")
@@ -253,7 +253,7 @@ public class StripePaymentService: NSObject {
         let params: [String: Any] = ["userId": userId, "email": email]
         apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { [weak self] (result, error) in
             print("FirebaseAPIService: createCustomer result \(String(describing: result)) error \(String(describing: error))")
-            if let dict = result as? [String: Any], let customerId = dict["customerId"] as? String {
+            if let dict = result as? [String: Any], let customerId = dict["customer_id"] as? String {
                 self?.customerId.accept(customerId)
                 completion?(customerId, error)
             } else {
@@ -302,7 +302,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
 extension StripePaymentService: STPEphemeralKeyProvider {
     public func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         guard let customerId = self.customerId.value else { return }
-        let params: [String: Any] = ["api_version": apiVersion, "customerId": customerId]
+        let params: [String: Any] = ["api_version": apiVersion, "customer_id": customerId]
         let method = "POST"
         apiService?.cloudFunction(functionName: "ephemeralKeys", method: method, params: params) { (result, error) in
             completion(result as? [AnyHashable: Any], error)
