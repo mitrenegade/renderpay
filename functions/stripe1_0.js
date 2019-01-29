@@ -39,7 +39,7 @@ exports.validateStripeCustomer = function(req, res, exports) {
         return res.status(500).json({"error": "Could not validate Stripe customer: empty email"})
     }
 
-    var customerRef = `/stripeCustomers/${userId}/customerId`
+    var customerRef = `/stripeCustomers/${userId}/customer_id`
     return admin.database().ref(customerRef).once('value')
     .then(snapshot => {
         if (!snapshot.exists()) {
@@ -50,7 +50,7 @@ exports.validateStripeCustomer = function(req, res, exports) {
             return snapshot.val()
         }
     }).then(customer => {
-        return res.status(200).json({"customerId": customer})
+        return res.status(200).json({"customer_id": customer})
     })
 }
 
