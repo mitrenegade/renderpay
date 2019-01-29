@@ -1,10 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const app = require('express')
-
-const config = functions.config().dev
-
-const stripe = require('./stripe')
+const globals = require('./globals')
 
 admin.initializeApp(functions.config().firebase);
 
