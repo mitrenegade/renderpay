@@ -47,13 +47,7 @@ public class StripePaymentService: NSObject {
     public let paymentSource: BehaviorRelay<STPSource?> = BehaviorRelay<STPSource?>(value: nil)
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
-    
-    public weak var hostController: UIViewController? {
-        didSet {
-            //            self.paymentContext?.hostViewController = hostController
-            print("Didset host")
-        }
-    }
+    public weak var hostController: UIViewController?
     
     // customers
     public let customersDidLoad: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: false)
@@ -287,8 +281,6 @@ extension StripePaymentService: STPPaymentContextDelegate {
             return // Do nothing
         }
     }
-    
-    
 }
 
 // MARK: - Ephemeral keys
