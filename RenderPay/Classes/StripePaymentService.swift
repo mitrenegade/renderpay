@@ -40,13 +40,16 @@ public class StripePaymentService: NSObject {
     fileprivate var userId: String?
     
     // payment method
-    var paymentContext: STPPaymentContext?
+    var paymentContext: STPPaymentContext? // from stripe library
+    private var _storedPaymentSource: String? // from firebase
+    public var storedPaymentSource: String? { return _storedPaymentSource }
     
     // state observables
     public let customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
     public let paymentSource: BehaviorRelay<STPSource?> = BehaviorRelay<STPSource?>(value: nil)
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
+
     public weak var hostController: UIViewController?
     
     // customers
@@ -97,6 +100,7 @@ public class StripePaymentService: NSObject {
         print("StripeService: resetting on logout")
         disposeBag = DisposeBag()
         customerId.accept(nil)
+        _storedPaymentSource = nil
         paymentContextLoading.value = false
         paymentContext = nil
         hostController = nil
@@ -106,14 +110,18 @@ public class StripePaymentService: NSObject {
         self.paymentContextLoading.value = true
         self.userId = userId
         let firRef = Database.database().reference()
-        let ref = firRef.child("stripeCustomers").child(userId).child("customer_id")
+        let ref = firRef.child("stripeCustomers").child(userId)
         ref.observe(.value, with: { [weak self] (snapshot) in
-            guard snapshot.exists(), let customerId = snapshot.value as? String else {
-                print("Error no customer loaded")
-                self?.customerId.accept(nil)
-                return
+            guard snapshot.exists(),
+                let dict = snapshot.value as? [String: Any],
+                let customerId = dict["customer_id"] as? String else {
+                    print("Error no customer loaded")
+                    self?.customerId.accept(nil)
+                    self?._storedPaymentSource = nil
+                    return
             }
             self?.customerId.accept(customerId)
+            self?._storedPaymentSource = dict["source"] as? String
         })
     }
     
