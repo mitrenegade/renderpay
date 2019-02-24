@@ -6,42 +6,10 @@
 //
 
 import UIKit
-import UIKit
 import RxSwift
 import RxCocoa
 import FirebaseDatabase
 import RenderCloud
-
-public enum AccountState: Equatable {
-    case unknown
-    case loading
-    case account(String)
-    case none
-    
-    public var description: String {
-        switch self {
-        case .unknown: return "unknown"
-        case .loading: return "loading..."
-        case .account(let acct): return "Merchant account: \(acct)"
-        case .none: return "none"
-        }
-    }
-
-    public static func ==(lhs: AccountState, rhs: AccountState) -> Bool {
-        switch (lhs, rhs) {
-        case (.none, .none):
-            return true
-        case (.loading, .loading):
-            return true
-        case (.account(let p1), .account(let p2)):
-            return p1 == p2
-        case (.unknown, .unknown):
-            return true
-        default:
-            return false
-        }
-    }
-}
 
 public class StripeConnectService {
     public var clientId: String?

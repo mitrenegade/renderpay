@@ -13,28 +13,6 @@ import FirebaseDatabase
 import Stripe
 import RenderCloud
 
-public enum PaymentStatus {
-    case loading
-    case noCustomer
-    case noPaymentMethod // no customer_id exists
-    case ready(source: STPSource)
-    
-    public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
-        switch (lhs, rhs) {
-        case (.noCustomer, .noCustomer):
-            return true
-        case (.noPaymentMethod, .noPaymentMethod):
-            return true
-        case (.loading, .loading):
-            return true
-        case (.ready(let s1), .ready(let s2)):
-            return s1.stripeID == s2.stripeID
-        default:
-            return false
-        }
-    }
-}
-
 public class StripePaymentService: NSObject {
     fileprivate var customers: [String: String] = [:]
     fileprivate var userId: String?
