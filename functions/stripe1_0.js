@@ -10,16 +10,16 @@ const stripe = require('stripe')(stripeToken)
 exports.ephemeralKeys = function(req, res, exports) {
 //exports.ephemeralKeys = function(req, res, stripe) {
     let stripe_version = req.body.api_version
-    let customer = req.body.customer_id
-    console.log('Stripe v1.0 ephemeralKeys with ' + stripe_version + ' and ' + customer)
+    let customer_id = req.body.customer_id
+    console.log('Stripe v1.0 ephemeralKeys with ' + stripe_version + ' and ' + customer_id)
     if (!stripe_version) {
         return res.status(400).end();
     }
     // This function assumes that some previous middleware has determined the
     // correct customerId for the session and saved it on the request object.
     return stripe.ephemeralKeys.create(
-        customer,
-        stripe_version
+        {customer: customer_id},
+        {stripe_version: stripe_version}
     ).then((key) => {
         return res.status(200).json(key);
     }).catch((err) => {
