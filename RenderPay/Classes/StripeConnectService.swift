@@ -11,14 +11,14 @@ import RxCocoa
 import FirebaseDatabase
 import RenderCloud
 
-public class StripeConnectService {
+public class StripeConnectService: ConnectService {
     public var clientId: String?
     public var redirectUrl: String? // used for redirect
     public var apiService: CloudAPIService?
     
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    public init(clientId: String, apiService: CloudAPIService? = nil) {
+    required public init(clientId: String, apiService: CloudAPIService? = nil) {
         // for connect
         self.clientId = clientId
         self.apiService = apiService
