@@ -58,7 +58,7 @@ exports.validateStripeCustomer = function(req, res, exports) {
 // from https://adamjstevenson.com/stripe/2017/10/20/building-a-marketplace-using-stripe-connect-examples.html
 createStripeCustomer = function(email, uid) {
     console.log("Stripe 1.0: Creating stripeCustomer " + uid + " " + email)
-    const ref = `/stripeCustomers/${uid}/customerId`
+    const ref = `/stripeCustomers/${uid}/customer_id`
     return stripe.customers.create({
         email: email
     }, function(err, customer) {
@@ -66,7 +66,7 @@ createStripeCustomer = function(email, uid) {
             console.log('CreateStripeCustomer v1.0' + ref + ' resulted in error ' + err)
             return err
         } else {
-            console.log('CreateStripeCustomer v1.0 ' + ref + ' email ' + email + ' created with customerId ' + customer.id)
+            console.log('CreateStripeCustomer v1.0 ' + ref + ' email ' + email + ' created with customer_id ' + customer.id)
             return admin.database().ref(ref).set(customer.id);
         }
     }).then(result => {
@@ -75,15 +75,14 @@ createStripeCustomer = function(email, uid) {
     })
 }
 
-exports.savePaymentInfo = function(req, res, exports) {
-//exports.savePaymentInfo = function(req, res, admin) {
+exports.savePaymentInfo = function(req, res) {
     const userId = req.body.userId
     const source = req.body.source
     const last4 = req.body.last4
     const label = req.body.label
     var customerId = "unknown"
     console.log("Stripe 1.0: SavePaymentInfo: userId " + userId + " source " + source + " last4 " + last4 + " label " + label)
-    var customerRef = `/stripeCustomers/${userId}/customerId`
+    var customerRef = `/stripeCustomers/${userId}/customer_id`
     return admin.database().ref(customerRef).once('value').then(snapshot => {
         if (!snapshot.exists()) {
             throw new Error("Customer doesn't exist")
@@ -95,9 +94,9 @@ exports.savePaymentInfo = function(req, res, exports) {
         customerId = customer
         return admin.database().ref(userRef).update(params)
     }).then(result => {
-        return res.status(200).json({"customerId": customerId})
+        return res.status(200).json({"customer_id": customerId})
     }).catch((err) => {
-        console.log("Probably no customerId for userId. err " + JSON.stringify(err))
+        console.log("Probably no customer_id for userId. err " + JSON.stringify(err))
         return res.status(500).json({"error": err})
     })
 }
