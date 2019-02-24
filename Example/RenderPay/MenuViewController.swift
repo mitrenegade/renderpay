@@ -54,10 +54,13 @@ class MenuViewController: UIViewController {
                 }).disposed(by: disposeBag)
 
                 paymentService.startListeningForAccount(userId: userId)
-                paymentService.hostController = self
                 paymentService.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
                     self?.paymentStatus = status
                     switch status {
+                    case .loading:
+                        if let self = self {
+                            self.paymentService.loadPayment(hostController: self)
+                        }
                     case .ready(let source):
                         print("paymentMethod updated")
                         if let last4 = source.cardDetails?.last4 {
