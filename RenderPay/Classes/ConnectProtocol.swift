@@ -1,6 +1,6 @@
 //
-//  Protocols.swift
-//  Balizinha
+//  ConnectProtocol.swift
+//  RenderPay
 //
 //  Created by Bobby Ren on 2/24/19.
 //
@@ -9,10 +9,6 @@ import Foundation
 import RxSwift
 import RxCocoa
 import RenderCloud
-
-public protocol PaymentService {
-    
-}
 
 public protocol ConnectService {
     var clientId: String? { get }
@@ -25,4 +21,3 @@ public protocol ConnectService {
     func startListeningForAccount(userId: String)
     func getOAuthUrl(_ userId: String) -> String?
 }
-
