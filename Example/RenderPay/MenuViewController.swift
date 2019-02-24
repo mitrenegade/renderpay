@@ -54,25 +54,25 @@ class MenuViewController: UIViewController {
                 }).disposed(by: disposeBag)
 
                 paymentService.startListeningForAccount(userId: userId)
-                paymentService.hostController = self
                 paymentService.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
                     self?.paymentStatus = status
                     switch status {
-                    case .ready(paymentMethod: let method):
+                    case .loading:
+                        if let self = self {
+                            self.paymentService.loadPayment(hostController: self)
+                        }
+                    case .ready(let source):
                         print("paymentMethod updated")
-                        guard let paymentMethod = method else { break }
-                        if let source = paymentMethod as? STPSource, let last4 = source.cardDetails?.last4 {
+                        if let last4 = source.cardDetails?.last4 {
                             print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
                             self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
-                        } else if let card = paymentMethod as? STPCard {
-                            // always write card to firebase since it's an internal call
-                            print("updated card \(card.stripeID)")
-                            self?.paymentService.savePaymentInfo(userId: userId, source: card.stripeID, last4: card.last4, label: card.label)
                         }
                     default:
                         break
                     }
-                    self?.reloadTable()
+                    DispatchQueue.main.async {
+                        self?.reloadTable()
+                    }
                 }).disposed(by: disposeBag)
             }
         }
@@ -183,7 +183,7 @@ class MenuViewController: UIViewController {
         case .noPaymentMethod:
             // show payment methods
             paymentService.shouldShowPaymentController()
-        case .ready(let paymentMethod):
+        case .ready:
             // change payment method or show it
             // show payment methods
             paymentService.shouldShowPaymentController()
@@ -218,12 +218,12 @@ extension MenuViewController: UITableViewDataSource {
                 case .noPaymentMethod:
                     paymentAccountString = "Click to add payment method"
                 case .ready(let method):
-                    paymentAccountString = "Payment account: \(method?.label ?? "unnamed")"
+                    paymentAccountString = "Payment account: \(method.label)"
                 }
                 cell.textLabel?.text = paymentAccountString
             case .charge:
                 cell.textLabel?.text = menuItems[indexPath.row].rawValue
-                switch connectService.accountState.value ?? .none {
+                switch connectService.accountState.value {
                 case .account:
                     cell.textLabel?.alpha = 1
                 default:
@@ -256,7 +256,7 @@ extension MenuViewController: UITableViewDelegate {
         case .stripePayment:
             refreshPayment()
         case .charge:
-            switch (connectService.accountState.value ?? .none, paymentStatus) {
+            switch (connectService.accountState.value, paymentStatus) {
             case (.account, .ready):
                 // connectId and payment source are found by the server
                 if let userId = userId {

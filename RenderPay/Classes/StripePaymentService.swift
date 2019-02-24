@@ -17,7 +17,7 @@ public enum PaymentStatus {
     case loading
     case noCustomer
     case noPaymentMethod // no customer_id exists
-    case ready(paymentMethod: STPPaymentMethod?)
+    case ready(source: STPSource)
     
     public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
         switch (lhs, rhs) {
@@ -27,14 +27,8 @@ public enum PaymentStatus {
             return true
         case (.loading, .loading):
             return true
-        case (.ready(let p1), .ready(let p2)):
-            if let source1 = p1 as? STPSource, let source2 = p2 as? STPSource {
-                return source1.stripeID == source2.stripeID
-            } else if let card1 = p1 as? STPCard, let card2 = p2 as? STPCard {
-                return card1.stripeID == card2.stripeID
-            } else {
-                return false
-            }
+        case (.ready(let s1), .ready(let s2)):
+            return s1.stripeID == s2.stripeID
         default:
             return false
         }
@@ -46,22 +40,21 @@ public class StripePaymentService: NSObject {
     fileprivate var userId: String?
     
     // payment method
-    var paymentContext: Variable<STPPaymentContext?> = Variable(nil)
+    var paymentContext: STPPaymentContext? // from stripe library
+    private var _storedPaymentSource: String? // from firebase
+    public var storedPaymentSource: String? { return _storedPaymentSource }
+    
+    // state observables
     public let customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
+    public let paymentSource: BehaviorRelay<STPSource?> = BehaviorRelay<STPSource?>(value: nil)
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
 
-    public weak var hostController: UIViewController? {
-        didSet {
-            self.paymentContext.value?.hostViewController = hostController
-        }
-    }
-    
     // customers
     public let customersDidLoad: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: false)
     
     fileprivate var disposeBag: DisposeBag
-
+    
     public var apiService: CloudAPIService?
     public init(apiService: CloudAPIService? = nil) {
         // for connect
@@ -69,7 +62,7 @@ public class StripePaymentService: NSObject {
         // for payments
         let config = STPPaymentConfiguration.shared()
         config.createCardSources = true;
-
+        
         // status: no customer_id = none
         // status: customer_id, no paymentContext = loading, should trigger creating payment context
         // status: customer_id, paymentContext.loading = loading
@@ -77,75 +70,73 @@ public class StripePaymentService: NSObject {
         // status: customer_id, !paymentContext.loading, paymentMethod exists = View payments (ready)
         disposeBag = DisposeBag()
         print("StripeService: starting observing to update status")
-        self.statusObserver = Observable.combineLatest(paymentContext.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) {context, customerId, loading in
-            guard let customerId = customerId else {
+        self.statusObserver = Observable.combineLatest(paymentSource.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) { source, customerId, loading in
+            switch (customerId, loading, source) {
+            case (nil, _, _):
+                print("StripeService: status update: \(PaymentStatus.noCustomer)")
                 return .noCustomer
-            }
-            guard let context = context else {
-                return .loading
-            }
-            if context.loading { // use actual loading value; paymentContextLoading is only used as a trigger
-                // customer exists, context exists, loading payment method
+            case (_, true, _):
                 print("StripeService: status update: \(PaymentStatus.loading)")
                 return .loading
-            }
-            else if let paymentMethod = context.selectedPaymentMethod {
-                // customer exists, context exists, payment exists
-                print("StripeService: status update: \(PaymentStatus.ready)")
-                return .ready(paymentMethod: paymentMethod)
-            } else {
-                // customer exists, context exists, no payment method
-                print("StripeService: status update: \(PaymentStatus.noPaymentMethod)")
-                return .noPaymentMethod
+            case (_, false, let source):
+                // customer exists payment source exists
+                if let source = source {
+                    print("StripeService: status update: \(PaymentStatus.ready)")
+                    return .ready(source: source)
+                } else {
+                    print("StripeService: status update: \(PaymentStatus.noPaymentMethod)")
+                    return .noPaymentMethod
+                }
             }
         }
         
         super.init()
-        self.customerId.asObservable().filterNil().subscribe(onNext: { (customerId) in
-            self.loadPayment()
-        }).disposed(by: disposeBag)
-
         self.getStripeCustomers(completion: nil)
     }
-
+    
     public func resetOnLogout() {
         print("StripeService: resetting on logout")
         disposeBag = DisposeBag()
         customerId.accept(nil)
+        _storedPaymentSource = nil
         paymentContextLoading.value = false
-        paymentContext.value = nil
-        hostController = nil
+        paymentContext = nil
     }
     
     public func startListeningForAccount(userId: String) {
+        self.paymentContextLoading.value = true
         self.userId = userId
         let firRef = Database.database().reference()
-        let ref = firRef.child("stripeCustomers").child(userId).child("customer_id")
+        let ref = firRef.child("stripeCustomers").child(userId)
         ref.observe(.value, with: { [weak self] (snapshot) in
-            guard snapshot.exists(), let customerId = snapshot.value as? String else {
-                print("Error no customer loaded")
-                self?.customerId.accept(nil)
-                return
+            guard snapshot.exists(),
+                let dict = snapshot.value as? [String: Any],
+                let customerId = dict["customer_id"] as? String else {
+                    print("Error no customer loaded")
+                    self?.customerId.accept(nil)
+                    self?._storedPaymentSource = nil
+                    return
             }
             self?.customerId.accept(customerId)
+            self?._storedPaymentSource = dict["source"] as? String
         })
     }
     
-    func loadPayment() {
-        guard let customerId = self.customerId.value else { return }
-        guard self.paymentContext.value == nil else { return }
-        
+    public func loadPayment(hostController: UIViewController?) {
+        guard let customerId = self.customerId.value else {
+            return
+        }
         print("StripeService: loadPayment for customer \(customerId)")
         let customerContext = STPCustomerContext(keyProvider: self)
         let paymentContext = STPPaymentContext(customerContext: customerContext)
         paymentContext.delegate = self
-        if let hostController = self.hostController {
+        if let hostController = hostController {
             paymentContext.hostViewController = hostController
         }
-        self.paymentContext.value = paymentContext
+        self.paymentContext = paymentContext
     }
     
-/* MARK: - Payments */
+    /* MARK: - Payments */
     public func checkForPayment(for eventId: String, by playerId: String, completion:@escaping ((Bool)->Void)) {
         let ref = Database.database().reference().child("charges/events/\(eventId)")
         print("checking for payment on \(ref)")
@@ -167,7 +158,7 @@ public class StripePaymentService: NSObject {
     public func savePaymentInfo(userId: String, source: String, last4: String, label: String) {
         let params: [String: Any] = ["userId": userId, "source": source, "last4": last4, "label": label]
         apiService?.cloudFunction(functionName: "savePaymentInfo", method: "POST", params: params) { (result, error) in
-            print("FirebaseAPIService: savePaymentInfo result \(result) error \(error)")
+            print("FirebaseAPIService: savePaymentInfo result \(String(describing: result)) error \(String(describing: error))")
         }
     }
     
@@ -214,7 +205,7 @@ public class StripePaymentService: NSObject {
             context.presentPaymentMethodsViewController()
         }
     }
-/* MARK: - Customers */
+    /* MARK: - Customers */
     public func getStripeCustomers(completion: ((_ results: [String: String]) -> Void)?) {
         // TODO: Balizinha must use stripe_customers until fully migrated
         let queryRef = Database.database().reference().child("stripeCustomers")
@@ -269,8 +260,9 @@ extension StripePaymentService: STPPaymentContextDelegate {
         print("StripeService: paymentContextDidChange. loading \(paymentContext.loading), selected payment \(String(describing: paymentContext.selectedPaymentMethod))")
         
         paymentContextLoading.value = paymentContext.loading
-        //        self.notify(NotificationType.PaymentContextChanged, object: nil, userInfo: nil)
-        // TODO: if user switches payment methods, call savePaymentInfo
+        if let source = paymentContext.selectedPaymentMethod as? STPSource {
+            paymentSource.accept(source)
+        }
     }
     
     public func paymentContext(_ paymentContext: STPPaymentContext, didFailToLoadWithError error: Error) {
@@ -294,8 +286,6 @@ extension StripePaymentService: STPPaymentContextDelegate {
             return // Do nothing
         }
     }
-    
-
 }
 
 // MARK: - Ephemeral keys
