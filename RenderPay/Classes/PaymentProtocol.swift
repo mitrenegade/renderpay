@@ -16,12 +16,12 @@ public protocol PaymentService {
     var storedPaymentSource: String? { get }
     
     // state observables
-//    let customerId: BehaviorRelay<String?>
-//    let paymentSource: BehaviorRelay<STPSource?>
-//    let statusObserver: Observable<PaymentStatus>
+    var customerId: BehaviorRelay<String?> { get }
+    var paymentSource: BehaviorRelay<STPSource?> { get }
+    var statusObserver: Observable<PaymentStatus> { get }
     
     // customers
-//    let customersDidLoad: BehaviorRelay<Bool>
+//    let customersDidLoad: BehaviorRelay<Bool> // not used
     
     init(apiService: CloudAPIService?)
     func resetOnLogout()
@@ -32,7 +32,7 @@ public protocol PaymentService {
     func holdPayment(userId: String, eventId: String, completion: ((_ response: Any?, _ error: Error?) -> ())?)
     func capturePayment(userId: String, eventId: String, chargeId: String, params: [String: Any]?, completion: ((_ response: Any?, _ error: Error?) -> ())?)
     func makePayment(userId: String, eventId: String, completion: ((_ response: Any?, _ error: Error?) -> ())?)
-    func refundPayment(eventId: String, chargeId: String, params: [String: Any]? = nil, completion: ((_ response: Any?, _ error: Error?) -> ())?)
+    func refundPayment(eventId: String, chargeId: String, params: [String: Any]?, completion: ((_ response: Any?, _ error: Error?) -> ())?)
     func shouldShowPaymentController()
     
     // MARK: - customers

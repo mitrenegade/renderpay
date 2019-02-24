@@ -36,9 +36,9 @@ fileprivate let loggedOutMenu: [MenuItem] = [.login]
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    var connectService: StripeConnectService!
-    var paymentService: StripePaymentService!
-    let apiService: FirebaseAPIService = FirebaseAPIService()
+    var connectService: ConnectService!
+    var paymentService: PaymentService!
+    let apiService: CloudAPIService = FirebaseAPIService()
     
     var paymentStatus: PaymentStatus = .loading
     
@@ -277,7 +277,7 @@ extension MenuViewController: UITableViewDelegate {
     
     func goToCharge(customerId: String, connectId: String) {
         let params: [String: Any] = ["amount": 100, "customerId": customerId, "connectId": connectId, "eventId": "456"]
-        apiService.cloudFunction(functionName: "createStripeConnectCharge", params: params) { [weak self] (result, error) in
+        apiService.cloudFunction(functionName: "createStripeConnectCharge", method: "POST", params: params) { [weak self] (result, error) in
             print("CreateStripeConnectCharge: result: \(String(describing: result)) error: \(String(describing: error))")
             if let error = error as NSError? {
                 self?.simpleAlert("Create charge error", defaultMessage: nil, error: error)
