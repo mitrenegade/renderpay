@@ -10,16 +10,16 @@ const stripe = require('stripe')(stripeToken)
 exports.ephemeralKeys = function(req, res, exports) {
 //exports.ephemeralKeys = function(req, res, stripe) {
     let stripe_version = req.body.api_version
-    let customerId = req.body.customerId
-    console.log('Stripe v1.0 ephemeralKeys with ' + stripe_version + ' and ' + customerId)
+    let customer = req.body.customer_id
+    console.log('Stripe v1.0 ephemeralKeys with ' + stripe_version + ' and ' + customer)
     if (!stripe_version) {
         return res.status(400).end();
     }
     // This function assumes that some previous middleware has determined the
     // correct customerId for the session and saved it on the request object.
     return stripe.ephemeralKeys.create(
-        {customer: customerId},
-        {stripe_version: stripe_version}
+        customer,
+        stripe_version
     ).then((key) => {
         return res.status(200).json(key);
     }).catch((err) => {
@@ -181,7 +181,7 @@ exports.createStripeConnectCharge = function(req, res, exports) {
     const currency = 'USD'
     const eventId = req.body.eventId
     const connectId = req.body.connectId // index into stripeConnectAccount
-    const customerId = req.body.customerId // index into stripeCustomer
+    const customerId = req.body.customer_id // index into stripeCustomer
     var chargeId = req.body.chargeId
     if (chargeId == undefined) {
         chargeId = exports.createUniqueId()
@@ -247,7 +247,7 @@ createStripeConnectChargeToken = function(connectId, customerId) {
             if (!snapshot.exists()) {
                 throw new Error("No customer account found for " + customerId)
             }
-            var customer = snapshot.val().customerId
+            var customer = snapshot.val().customer_id
             var original_source = snapshot.val().source
             if (customer == undefined) {
                 throw new Error("No customer account associated with " + customer)
