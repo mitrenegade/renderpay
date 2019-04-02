@@ -49,7 +49,7 @@ public class StripePaymentService: NSObject {
     public let paymentSource: BehaviorRelay<STPSource?> = BehaviorRelay<STPSource?>(value: nil)
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
-
+    
     // customers
     public let customersDidLoad: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: false)
     
@@ -181,6 +181,13 @@ public class StripePaymentService: NSObject {
             info = ["userId": userId, "eventId": eventId, "chargeId": chargeId]
         }
         apiService?.cloudFunction(functionName: "capturePayment", method: "POST", params: info) { (results, error) in
+            completion?(results, error)
+        }
+    }
+    
+    public func makePayment(userId: String, eventId: String, completion: ((_ response: Any?, _ error: Error?) -> ())?) {
+        let params = ["userId": userId, "eventId": eventId]
+        apiService?.cloudFunction(functionName: "makePayment", method: "POST", params: params) { (results, error) in
             completion?(results, error)
         }
     }
