@@ -21,8 +21,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZTd-On-4pH">
-                                <rect key="frame" x="166.5" y="28" width="42" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZTd-On-4pH">
+                                <rect key="frame" x="24" y="28" width="327" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -30,11 +30,16 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="ZTd-On-4pH" secondAttribute="trailing" constant="8" id="9xu-VZ-0ew"/>
+                            <constraint firstItem="ZTd-On-4pH" firstAttribute="leading" secondItem="FB3-Zy-Tkg" secondAttribute="leadingMargin" constant="8" id="NIa-ta-Lpx"/>
                             <constraint firstItem="ZTd-On-4pH" firstAttribute="centerX" secondItem="FB3-Zy-Tkg" secondAttribute="centerX" id="XG6-qX-o6i"/>
                             <constraint firstItem="ZTd-On-4pH" firstAttribute="top" secondItem="g28-7x-UjR" secondAttribute="bottom" constant="8" id="hfV-ro-gNV"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Event" id="j7H-6W-XRz"/>
+                    <connections>
+                        <outlet property="label" destination="ZTd-On-4pH" id="ofv-4W-KiF"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m8S-my-9qf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

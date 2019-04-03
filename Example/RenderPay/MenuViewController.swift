@@ -36,9 +36,9 @@ fileprivate let loggedOutMenu: [MenuItem] = [.login]
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    var connectService: ConnectService!
-    var paymentService: PaymentService!
-    let apiService: CloudAPIService = FirebaseAPIService()
+    let connectService: ConnectService = Globals.stripeConnectService
+    let paymentService: PaymentService = Globals.stripePaymentService
+    let apiService: CloudAPIService = Globals.apiService
     
     var paymentStatus: PaymentStatus = .loading
     
@@ -85,11 +85,6 @@ class MenuViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.title = "RenderPay Menu"
-        
-        connectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: apiService)
-        paymentService = StripePaymentService(apiService: apiService)
-
-        
         AuthService.shared.startup()
         AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in
             if state == .loggedOut {
