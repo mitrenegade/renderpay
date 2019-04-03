@@ -36,10 +36,10 @@ fileprivate let loggedOutMenu: [MenuItem] = [.login]
 class MenuViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     fileprivate var disposeBag = DisposeBag()
-    let connectService: ConnectService = Globals.stripeConnectService
-    let paymentService: PaymentService = Globals.stripePaymentService
-    let apiService: CloudAPIService = Globals.apiService
-    
+    var connectService: ConnectService!
+    var paymentService: PaymentService!
+    var apiService: CloudAPIService!
+
     var paymentStatus: PaymentStatus = .loading
     
     var menuItems: [MenuItem] = loggedOutMenu
@@ -83,7 +83,10 @@ class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        apiService = Globals.apiService
+        connectService = Globals.stripeConnectService
+        paymentService = Globals.stripePaymentService
+
         navigationItem.title = "RenderPay Menu"
         AuthService.shared.startup()
         AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in

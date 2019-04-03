@@ -15,7 +15,6 @@ import Balizinha
 class EventsViewController: UIViewController {
     @IBOutlet weak var label: UILabel!
 
-    let paymentService: PaymentService = Globals.stripePaymentService
     var paymentStatus: PaymentStatus = .loading
 
     fileprivate var disposeBag = DisposeBag()
@@ -47,8 +46,8 @@ class EventsViewController: UIViewController {
     func startListeningForAccount() {
         guard let userId = userId else { return }
         print("Events: starting paymentService listener")
-        paymentService.startListeningForAccount(userId: userId)
-        paymentService.statusObserver
+        Globals.stripePaymentService.startListeningForAccount(userId: userId)
+        Globals.stripePaymentService.statusObserver
             .asObservable()
             .distinctUntilChanged( {$0 == $1} )
             .subscribe(onNext: refresh)
@@ -61,7 +60,7 @@ class EventsViewController: UIViewController {
         case .loading:
             print("Events: paymentStatus loading")
             if let self = self {
-                self.paymentService.loadPayment(hostController: self)
+                Globals.stripePaymentService.loadPayment(hostController: self)
                 self.label.text = "Loading payment source..."
             }
         case .ready(let source):
