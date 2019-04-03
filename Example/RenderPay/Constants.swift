@@ -22,7 +22,7 @@ let FIREBASE_URL_DEV = "https://us-central1-rollcall-and-random-dev.cloudfunctio
 let FIREBASE_URL_PROD = "https://us-central1-rollcall-and-random-drawing.cloudfunctions.net"
 
 class Globals {
-    static var apiService: CloudAPIService = FirebaseAPIService()
+    static var apiService: CloudAPIService = RenderAPIService()
     static var stripeConnectService: StripeConnectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: Globals.apiService)
     static var stripePaymentService: StripePaymentService = StripePaymentService(apiService: Globals.apiService)
 }

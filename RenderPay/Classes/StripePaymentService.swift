@@ -135,7 +135,7 @@ public class StripePaymentService: NSObject, PaymentService {
     public func savePaymentInfo(userId: String, source: String, last4: String, label: String) {
         let params: [String: Any] = ["userId": userId, "source": source, "last4": last4, "label": label]
         apiService?.cloudFunction(functionName: "savePaymentInfo", method: "POST", params: params) { (result, error) in
-            print("FirebaseAPIService: savePaymentInfo result \(String(describing: result)) error \(String(describing: error))")
+            print("CloudAPIService: savePaymentInfo result \(String(describing: result)) error \(String(describing: error))")
         }
     }
     
@@ -227,7 +227,7 @@ public class StripePaymentService: NSObject, PaymentService {
     public func createCustomer(userId: String, email: String, completion: ((String?, Error?)-> Void)?) {
         let params: [String: Any] = ["userId": userId, "email": email]
         apiService?.cloudFunction(functionName: "validateStripeCustomer", method: "POST", params: params) { [weak self] (result, error) in
-            print("FirebaseAPIService: createCustomer result \(String(describing: result)) error \(String(describing: error))")
+            print("CloudAPIService: createCustomer result \(String(describing: result)) error \(String(describing: error))")
             if let dict = result as? [String: Any], let customerId = dict["customer_id"] as? String {
                 self?.customerId.accept(customerId)
                 completion?(customerId, error)

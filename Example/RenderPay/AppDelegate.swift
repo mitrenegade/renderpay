@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             FirebaseApp.configure(options: fileopts)
         }
         let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
-        FirebaseAPIService.baseURL = URL(string: baseUrl)
+        RenderAPIService.baseURL = URL(string: baseUrl)
 
         // stripe
         // for payments

@@ -46,7 +46,7 @@ public class StripeConnectService: ConnectService {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
         guard let clientId = clientId else { return nil }
         var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = FirebaseAPIService.baseURL?.absoluteString {
+        if let baseUrl = RenderAPIService.baseURL?.absoluteString {
             url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
         }
         return url
