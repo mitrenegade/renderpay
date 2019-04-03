@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="WC4-fO-1fa">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -9,10 +9,59 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Menu View Controller-->
+        <!--Event-->
+        <scene sceneID="2cP-l9-f0O">
+            <objects>
+                <viewController title="Event" id="nN0-bk-buX" customClass="EventsViewController" customModule="RenderPay_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="g28-7x-UjR"/>
+                        <viewControllerLayoutGuide type="bottom" id="362-B6-ITV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="FB3-Zy-Tkg">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZTd-On-4pH">
+                                <rect key="frame" x="166.5" y="28" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="ZTd-On-4pH" firstAttribute="centerX" secondItem="FB3-Zy-Tkg" secondAttribute="centerX" id="XG6-qX-o6i"/>
+                            <constraint firstItem="ZTd-On-4pH" firstAttribute="top" secondItem="g28-7x-UjR" secondAttribute="bottom" constant="8" id="hfV-ro-gNV"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Event" id="j7H-6W-XRz"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="m8S-my-9qf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-758" y="38"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="lm8-bA-xtC">
+            <objects>
+                <tabBarController id="WC4-fO-1fa" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Xaq-1d-R6w">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="nN0-bk-buX" kind="relationship" relationship="viewControllers" id="qPG-G8-jqa"/>
+                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="viewControllers" id="0Mw-rs-92I"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="43o-4e-ijc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1708" y="-294"/>
+        </scene>
+        <!--Account-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="MenuViewController" customModule="RenderPay_Example" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Account" id="vXZ-lx-hvc" customClass="MenuViewController" customModule="RenderPay_Example" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -22,7 +71,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qT3-gx-hft">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="Pad-nu-EZC" style="IBUITableViewCellStyleDefault" id="P7d-v9-sa9">
@@ -57,13 +106,14 @@
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="qT3-gx-hft" secondAttribute="bottom" id="cNs-0j-WYG"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Account" id="QVW-ye-vVU"/>
                     <connections>
                         <outlet property="tableView" destination="qT3-gx-hft" id="DOn-0q-4qA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="53.600000000000001" y="102.99850074962519"/>
+            <point key="canvasLocation" x="-759" y="-665"/>
         </scene>
     </scenes>
 </document>
