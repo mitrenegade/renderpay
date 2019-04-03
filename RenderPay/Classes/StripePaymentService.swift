@@ -13,29 +13,7 @@ import FirebaseDatabase
 import Stripe
 import RenderCloud
 
-public enum PaymentStatus {
-    case loading
-    case noCustomer
-    case noPaymentMethod // no customer_id exists
-    case ready(source: STPSource)
-    
-    public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
-        switch (lhs, rhs) {
-        case (.noCustomer, .noCustomer):
-            return true
-        case (.noPaymentMethod, .noPaymentMethod):
-            return true
-        case (.loading, .loading):
-            return true
-        case (.ready(let s1), .ready(let s2)):
-            return s1.stripeID == s2.stripeID
-        default:
-            return false
-        }
-    }
-}
-
-public class StripePaymentService: NSObject {
+public class StripePaymentService: NSObject, PaymentService {
     fileprivate var customers: [String: String] = [:]
     fileprivate var userId: String?
     
@@ -56,7 +34,7 @@ public class StripePaymentService: NSObject {
     fileprivate var disposeBag: DisposeBag
     
     public var apiService: CloudAPIService?
-    public init(apiService: CloudAPIService? = nil) {
+    required public init(apiService: CloudAPIService? = nil) {
         // for connect
         self.apiService = apiService
         // for payments
@@ -70,7 +48,7 @@ public class StripePaymentService: NSObject {
         // status: customer_id, !paymentContext.loading, paymentMethod exists = View payments (ready)
         disposeBag = DisposeBag()
         print("StripeService: starting observing to update status")
-        self.statusObserver = Observable.combineLatest(paymentSource.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) { source, customerId, loading in
+        statusObserver = Observable.combineLatest(paymentSource.asObservable(), customerId.asObservable(), paymentContextLoading.asObservable()) { source, customerId, loading in
             switch (customerId, loading, source) {
             case (nil, _, _):
                 print("StripeService: status update: \(PaymentStatus.noCustomer)")
@@ -89,9 +67,8 @@ public class StripePaymentService: NSObject {
                 }
             }
         }
-        
         super.init()
-        self.getStripeCustomers(completion: nil)
+        getStripeCustomers(completion: nil)
     }
     
     public func resetOnLogout() {
@@ -104,7 +81,7 @@ public class StripePaymentService: NSObject {
     }
     
     public func startListeningForAccount(userId: String) {
-        self.paymentContextLoading.value = true
+        paymentContextLoading.value = true
         self.userId = userId
         let firRef = Database.database().reference()
         let ref = firRef.child("stripeCustomers").child(userId)
