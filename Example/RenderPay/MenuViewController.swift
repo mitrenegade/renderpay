@@ -54,26 +54,11 @@ class MenuViewController: UIViewController {
                 }).disposed(by: disposeBag)
 
                 paymentService.startListeningForAccount(userId: userId)
-                paymentService.statusObserver.asObservable().distinctUntilChanged( {$0 == $1} ).subscribe(onNext: { [weak self] (status) in
-                    self?.paymentStatus = status
-                    switch status {
-                    case .loading:
-                        if let self = self {
-                            self.paymentService.loadPayment(hostController: self)
-                        }
-                    case .ready(let source):
-                        print("paymentMethod updated")
-                        if let last4 = source.cardDetails?.last4 {
-                            print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
-                            self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
-                        }
-                    default:
-                        break
-                    }
-                    DispatchQueue.main.async {
-                        self?.reloadTable()
-                    }
-                }).disposed(by: disposeBag)
+                paymentService.statusObserver
+                    .asObservable()
+                    .distinctUntilChanged( {$0 == $1} )
+                    .subscribe(onNext: refresh)
+                    .disposed(by: disposeBag)
             }
         }
     }
@@ -89,7 +74,7 @@ class MenuViewController: UIViewController {
 
         navigationItem.title = "RenderPay Menu"
         AuthService.shared.startup()
-        AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in
+        AuthService.shared.loginState.subscribe(onNext: { [weak self] state in
             if state == .loggedOut {
                 self?.menuItems = loggedOutMenu
                 self?.reloadTable()
@@ -101,6 +86,28 @@ class MenuViewController: UIViewController {
                 self?.reloadTable()
             }
         }).disposed(by: disposeBag)
+    }
+    
+    
+    lazy var refresh: (PaymentStatus)->() = { [weak self] (status) in
+        self?.paymentStatus = status
+        switch status {
+        case .loading:
+            if let self = self {
+                self.paymentService.loadPayment(hostController: self)
+            }
+        case .ready(let source):
+            print("paymentMethod updated")
+            if let last4 = source.cardDetails?.last4, let userId = self?.userId {
+                print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
+                self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
+            }
+        default:
+            break
+        }
+        DispatchQueue.main.async {
+            self?.reloadTable()
+        }
     }
 
     func promptForLogin() {

@@ -31,7 +31,7 @@ class EventsViewController: UIViewController {
         super.viewDidLoad()
 
         print("Events: starting auth listener")
-        AuthService.shared.loginState.skip(1).subscribe(onNext: { [weak self] state in
+        AuthService.shared.loginState.subscribe(onNext: { [weak self] state in
             if state == .loggedOut {
                 print("Events: auth logged out")
                 self?.label.text = "Not logged in"
