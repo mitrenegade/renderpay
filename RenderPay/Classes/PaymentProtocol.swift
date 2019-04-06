@@ -17,7 +17,7 @@ public protocol PaymentService {
     
     // state observables
     var customerId: BehaviorRelay<String?> { get }
-    var paymentSource: BehaviorRelay<STPSource?> { get }
+    var paymentSource: BehaviorRelay<STPPaymentMethod?> { get }
     var statusObserver: Observable<PaymentStatus> { get }
     
     // customers

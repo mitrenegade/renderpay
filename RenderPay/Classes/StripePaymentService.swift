@@ -24,7 +24,7 @@ public class StripePaymentService: NSObject, PaymentService {
     
     // state observables
     public let customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
-    public let paymentSource: BehaviorRelay<STPSource?> = BehaviorRelay<STPSource?>(value: nil)
+    public let paymentSource: BehaviorRelay<STPPaymentMethod?> = BehaviorRelay<STPPaymentMethod?>(value: nil)
     fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
     
@@ -58,9 +58,12 @@ public class StripePaymentService: NSObject, PaymentService {
                 return .loading
             case (_, false, let source):
                 // customer exists payment source exists
-                if let source = source {
+                if let source = source as? STPSource {
                     print("StripeService: status update: \(PaymentStatus.ready)")
                     return .ready(source: source)
+                } else if let card = source as? STPCard {
+                    print("StripeService: status update: \(PaymentStatus.needsRefresh)")
+                    return .needsRefresh(card: card)
                 } else {
                     print("StripeService: status update: \(PaymentStatus.noPaymentMethod)")
                     return .noPaymentMethod
@@ -243,7 +246,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
     public func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
         print("StripeService: paymentContextDidChange. loading \(paymentContext.loading), selected payment \(String(describing: paymentContext.selectedPaymentMethod))")
         
-        if let source = paymentContext.selectedPaymentMethod as? STPSource {
+        if let source = paymentContext.selectedPaymentMethod {
             paymentSource.accept(source)
         }
         // loading must be set after source is at the right value because loading is higher priority in determing status

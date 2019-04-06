@@ -13,6 +13,7 @@ public enum PaymentStatus {
     case loading
     case noCustomer
     case noPaymentMethod // no customer_id exists
+    case needsRefresh(card: STPCard)
     case ready(source: STPSource)
     
     public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
@@ -23,6 +24,8 @@ public enum PaymentStatus {
             return true
         case (.loading, .loading):
             return true
+        case (.needsRefresh(let c1), .needsRefresh(let c2)):
+            return c1.stripeID == c2.stripeID
         case (.ready(let s1), .ready(let s2)):
             return s1.stripeID == s2.stripeID
         default:

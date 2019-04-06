@@ -102,6 +102,9 @@ class MenuViewController: UIViewController {
                 print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
                 self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
             }
+        case .needsRefresh(let card):
+            print("Here")
+            self?.simpleAlert("Please refresh your card", message: "We have updated our payment methods. Please remove and enter your payment method again.")
         default:
             break
         }
@@ -185,6 +188,9 @@ class MenuViewController: UIViewController {
                     // let customerId BehaviorRelay handle updates
                 }
             })
+        case .needsRefresh(let card):
+            print("Here's a card")
+            break
         case .noPaymentMethod:
             // show payment methods
             paymentService.shouldShowPaymentController()
@@ -222,8 +228,10 @@ extension MenuViewController: UITableViewDataSource {
                     paymentAccountString = "No customer found"
                 case .noPaymentMethod:
                     paymentAccountString = "Click to add payment method"
-                case .ready(let method):
-                    paymentAccountString = "Payment account: \(method.label)"
+                case .ready(let source):
+                    paymentAccountString = "Payment account: \(source.label)"
+                case .needsRefresh(let card):
+                    paymentAccountString = "Card needs refresh"
                 }
                 cell.textLabel?.text = paymentAccountString
             case .charge:
