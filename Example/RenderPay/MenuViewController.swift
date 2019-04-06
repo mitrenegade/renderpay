@@ -185,6 +185,9 @@ class MenuViewController: UIViewController {
                     // let customerId BehaviorRelay handle updates
                 }
             })
+        case .needsRefresh(let card):
+            print("Here's a card")
+            break
         case .noPaymentMethod:
             // show payment methods
             paymentService.shouldShowPaymentController()
@@ -222,8 +225,10 @@ extension MenuViewController: UITableViewDataSource {
                     paymentAccountString = "No customer found"
                 case .noPaymentMethod:
                     paymentAccountString = "Click to add payment method"
-                case .ready(let method):
-                    paymentAccountString = "Payment account: \(method.label)"
+                case .ready(let source):
+                    paymentAccountString = "Payment account: \(source.label)"
+                case .needsRefresh(let card):
+                    paymentAccountString = "Card needs refresh"
                 }
                 cell.textLabel?.text = paymentAccountString
             case .charge:
