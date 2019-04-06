@@ -102,6 +102,9 @@ class MenuViewController: UIViewController {
                 print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
                 self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
             }
+        case .needsRefresh(let card):
+            print("Here")
+            self?.simpleAlert("Please refresh your card", message: "We have updated our payment methods. Please remove and enter your payment method again.")
         default:
             break
         }

@@ -246,7 +246,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
     public func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
         print("StripeService: paymentContextDidChange. loading \(paymentContext.loading), selected payment \(String(describing: paymentContext.selectedPaymentMethod))")
         
-        if let source = paymentContext.selectedPaymentMethod as? STPSource {
+        if let source = paymentContext.selectedPaymentMethod {
             paymentSource.accept(source)
         }
         // loading must be set after source is at the right value because loading is higher priority in determing status
