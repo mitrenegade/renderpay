@@ -48,6 +48,6 @@ Payment library using Stripe
   s.dependency 'RxSwift'
   s.dependency 'RxCocoa'
   s.dependency 'RxOptional'
-  s.dependency 'RenderCloud', '~> 1.1.0'
+  s.dependency 'RenderCloud'
   s.dependency 'Stripe'
 end

@@ -3,7 +3,7 @@ use_frameworks!
 target 'RenderPay_Example' do
   pod 'RenderPay', :path => '../'
   pod 'Balizinha', :git => 'https://bitbucket.org/renderapps/balizinha-pod', :tag=>'0.5.7'
-  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'1.1.0'
+  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'1.2.0'
   target 'RenderPay_Tests' do
     inherit! :search_paths
 
