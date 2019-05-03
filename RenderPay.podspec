@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RenderPay'
-  s.version          = '0.1.2'
+  s.version          = '0.1.3'
   s.summary          = 'Handles Stripe connect'
 
 # This description is used to generate tags and improve search results.
@@ -48,6 +48,6 @@ Payment library using Stripe
   s.dependency 'RxSwift'
   s.dependency 'RxCocoa'
   s.dependency 'RxOptional'
-  s.dependency 'RenderCloud', '~> 1.1.0'
+  s.dependency 'RenderCloud'
   s.dependency 'Stripe'
 end
