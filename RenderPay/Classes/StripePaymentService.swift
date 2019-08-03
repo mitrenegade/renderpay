@@ -59,10 +59,10 @@ public class StripePaymentService: NSObject, PaymentService {
             case (_, false, let source):
                 // customer exists payment source exists
                 if let source = source as? STPSource {
-                    print("StripeService: status update: \(PaymentStatus.ready)")
+                    print("StripeService: status update: \(String(describing: PaymentStatus.ready))")
                     return .ready(source: source)
                 } else if let card = source as? STPCard {
-                    print("StripeService: status update: \(PaymentStatus.needsRefresh)")
+                    print("StripeService: status update: \(String(describing: PaymentStatus.needsRefresh))")
                     return .needsRefresh(card: card)
                 } else {
                     print("StripeService: status update: \(PaymentStatus.noPaymentMethod)")
@@ -271,6 +271,8 @@ extension StripePaymentService: STPPaymentContextDelegate {
         case .success: break
         //            self.showReceipt()
         case .userCancellation:
+            return; // Do nothing
+        @unknown default:
             return // Do nothing
         }
     }

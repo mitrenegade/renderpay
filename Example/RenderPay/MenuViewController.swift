@@ -168,7 +168,7 @@ class MenuViewController: UIViewController {
     
     func connectToStripe() {
         guard let userId = userId, let urlString = connectService.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
-        UIApplication.shared.openURL(url)
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
     func refreshPayment() {
