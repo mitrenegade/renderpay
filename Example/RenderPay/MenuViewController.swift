@@ -168,7 +168,7 @@ class MenuViewController: UIViewController {
     
     func connectToStripe() {
         guard let userId = userId, let urlString = connectService.getOAuthUrl(userId), let url = URL(string: urlString) else { return }
-        UIApplication.shared.openURL(url)
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
     func refreshPayment() {
@@ -188,7 +188,7 @@ class MenuViewController: UIViewController {
                     // let customerId BehaviorRelay handle updates
                 }
             })
-        case .needsRefresh(let card):
+        case .needsRefresh:
             print("Here's a card")
             break
         case .noPaymentMethod:
@@ -230,7 +230,7 @@ extension MenuViewController: UITableViewDataSource {
                     paymentAccountString = "Click to add payment method"
                 case .ready(let source):
                     paymentAccountString = "Payment account: \(source.label)"
-                case .needsRefresh(let card):
+                case .needsRefresh:
                     paymentAccountString = "Card needs refresh"
                 }
                 cell.textLabel?.text = paymentAccountString
