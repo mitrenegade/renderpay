@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol LoggingService {
+public protocol LoggingService {
     func logEvent(_ eventName: String, params: [String: Any]?)
 }
 

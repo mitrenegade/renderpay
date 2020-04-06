@@ -16,9 +16,11 @@ public class StripeConnectService: ConnectService {
     public var redirectUrl: String? // used for redirect
     public var apiService: CloudAPIService?
     
+    private let logger: LoggingService?
+    
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    required public init(clientId: String, apiService: CloudAPIService? = nil) {
+    required public init(clientId: String, apiService: CloudAPIService? = nil, logger: LoggingService? = nil) {
         // for connect
         self.clientId = clientId
         self.apiService = apiService
@@ -27,16 +29,21 @@ public class StripeConnectService: ConnectService {
     public func startListeningForAccount(userId: String) {
         accountState.accept(.loading)
         
+        logger?.logEvent("Listening for account", params: ["userId": userId])
+        
         let ref = Database.database().reference().child("stripeConnectAccounts").child(userId)
         ref.observe(.value) { [weak self] (snapshot) in
             guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
+                self?.logger?.logEvent("Account state", params: ["state": "none"])
                 self?.accountState.accept(.none)
                 return
             }
             print("Account info: \(info)")
             if let stripeUserId = info["stripeUserId"] as? String {
+                self?.logger?.logEvent("Account state", params: ["stripeUserId": stripeUserId])
                 self?.accountState.accept(.account(stripeUserId))
             } else {
+                self?.logger?.logEvent("Account state", params: ["state": "invalid user id"])
                 self?.accountState.accept(.unknown)
             }
         }
