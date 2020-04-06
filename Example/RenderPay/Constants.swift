@@ -28,6 +28,6 @@ class Globals {
     static var apiService: CloudAPIService = RenderAPIService()
     static var consoleLogger: LoggingService = { return ConsoleLogger(tag: "RenderPayLogging") }()
     static var defaultLogger: LoggingService? = nil
-    static var stripeConnectService: StripeConnectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: Globals.apiService, logger: TESTING ? Globals.consoleLogger : Globals.defaultLogger)
+    static var stripeConnectService: StripeConnectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: Globals.apiService, baseRef: Database.database().reference(), logger: TESTING ? Globals.consoleLogger : Globals.defaultLogger)
     static var stripePaymentService: StripePaymentService = StripePaymentService(apiService: Globals.apiService)
 }

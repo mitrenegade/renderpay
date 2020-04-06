@@ -8,24 +8,25 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import FirebaseDatabase
 import RenderCloud
 
 public class StripeConnectService: ConnectService {
-    public var clientId: String?
+    let clientId: String
     public var redirectUrl: String? // used for redirect
-    public var apiService: CloudAPIService?
+    let apiService: CloudAPIService
+    let baseRef: Reference
     
     private let logger: LoggingService?
-    
+    private var accountRef: Reference?
     
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    required public init(clientId: String, apiService: CloudAPIService? = nil, logger: LoggingService? = nil) {
+    required public init(clientId: String, apiService: CloudAPIService, baseRef: Reference, logger: LoggingService? = nil) {
         // for connect
         self.clientId = clientId
         self.apiService = apiService
         self.logger = logger
+        self.baseRef = baseRef
     }
     
     public func startListeningForAccount(userId: String) {
@@ -33,8 +34,8 @@ public class StripeConnectService: ConnectService {
         
         logger?.logEvent("Listening for account", params: ["userId": userId])
         
-        let ref = Database.database().reference().child("stripeConnectAccounts").child(userId)
-        ref.observe(.value) { [weak self] (snapshot) in
+        accountRef = baseRef.child(path: "stripeConnectAccounts").child(path: userId)
+        accountRef?.observeValue { [weak self] (snapshot) in
             guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
                 self?.logger?.logEvent("Account state", params: ["state": "none"])
                 self?.accountState.accept(.none)
@@ -53,7 +54,6 @@ public class StripeConnectService: ConnectService {
     
     public func getOAuthUrl(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        guard let clientId = clientId else { return nil }
         var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
         if let baseUrl = RenderAPIService.baseURL?.absoluteString {
             url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
@@ -63,6 +63,9 @@ public class StripeConnectService: ConnectService {
     
     // on logout
     public func stopListeningForAccount() {
-        
+        logger?.logEvent("Stop listening for account")
+        accountRef?.removeAllObservers()
+        accountRef = nil
+        accountState.accept(.none)
     }
 }

@@ -290,6 +290,7 @@ extension MenuViewController: UITableViewDelegate {
         case .logout:
             Globals.consoleLogger.logEvent("AuthService logout")
             AuthService.shared.logout()
+            connectService.stopListeningForAccount();
             reloadTable()
         }
     }
