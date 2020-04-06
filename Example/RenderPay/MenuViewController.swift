@@ -75,6 +75,7 @@ class MenuViewController: UIViewController {
         navigationItem.title = "RenderPay Menu"
         AuthService.shared.startup()
         AuthService.shared.loginState.subscribe(onNext: { [weak self] state in
+            Globals.consoleLogger.logEvent("MenuViewController authService state changed: \(state)")
             if state == .loggedOut {
                 self?.menuItems = loggedOutMenu
                 self?.reloadTable()
@@ -93,17 +94,17 @@ class MenuViewController: UIViewController {
         self?.paymentStatus = status
         switch status {
         case .loading:
+            Globals.consoleLogger.logEvent("PaymentStatus: loading")
             if let self = self {
                 self.paymentService.loadPayment(hostController: self)
             }
         case .ready(let source):
-            print("paymentMethod updated")
             if let last4 = source.cardDetails?.last4, let userId = self?.userId {
-                print("updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
+                Globals.consoleLogger.logEvent("PaymentStatus: ready with updated source \(source.stripeID) details \(String(describing: source.details)) last4 \(String(describing: source.cardDetails?.last4)) label \(source.label)")
                 self?.paymentService.savePaymentInfo(userId: userId, source: source.stripeID, last4: last4, label: source.label)
             }
         case .needsRefresh(let card):
-            print("Here")
+            Globals.consoleLogger.logEvent("PaymentStatus: needsRefresh")
             self?.simpleAlert("Please refresh your card", message: "We have updated our payment methods. Please remove and enter your payment method again.")
         default:
             break
@@ -175,6 +176,7 @@ class MenuViewController: UIViewController {
     }
     
     func refreshPayment() {
+        Globals.consoleLogger.logEvent("RefreshPayment called")
         switch paymentStatus {
         case .loading:
             break
@@ -286,6 +288,7 @@ extension MenuViewController: UITableViewDelegate {
         case .version:
             break
         case .logout:
+            Globals.consoleLogger.logEvent("AuthService logout")
             AuthService.shared.logout()
             reloadTable()
         }

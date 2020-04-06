@@ -18,6 +18,7 @@ public class StripeConnectService: ConnectService {
     
     private let logger: LoggingService?
     
+    
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
     required public init(clientId: String, apiService: CloudAPIService? = nil, logger: LoggingService? = nil) {
@@ -58,5 +59,10 @@ public class StripeConnectService: ConnectService {
             url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
         }
         return url
+    }
+    
+    // on logout
+    public func stopListeningForAccount() {
+        
     }
 }
