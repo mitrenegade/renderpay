@@ -42,7 +42,6 @@ public class StripeConnectService: ConnectService {
                 self?.accountState.accept(.none)
                 return
             }
-            print("Account info: \(info)")
             if let stripeUserId = info["stripeUserId"] as? String {
                 self?.logger?.logEvent("Account state", params: ["stripeUserId": stripeUserId])
                 self?.accountState.accept(.account(stripeUserId))
