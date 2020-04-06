@@ -49,7 +49,7 @@ class MenuViewController: UIViewController {
             if let userId = userId, oldValue == nil {
                 connectService.startListeningForAccount(userId: userId)
                 connectService.accountState.skip(1).distinctUntilChanged().subscribe(onNext: { [weak self] state in
-                    print("StripeConnectService accountState changed: \(state)")
+                    Globals.consoleLogger.logEvent("StripeConnectService accountState changed: \(state)")
                     self?.reloadTable()
                 }).disposed(by: disposeBag)
 
@@ -147,13 +147,16 @@ class MenuViewController: UIViewController {
     }
     
     func doLogin(email: String, password: String) {
+        Globals.consoleLogger.logEvent("Do login")
         AuthService.shared.loginUser(email: email, password: password) { [weak self] error in
             if let error = error {
+                Globals.consoleLogger.logEvent("Do login with error", params:["error": error])
                 print("Error!")
                 let alert = UIAlertController(title: "Login error", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self?.present(alert, animated: true)
             } else {
+                Globals.consoleLogger.logEvent("Do login with success")
                 print("Login success")
                 let alert = UIAlertController(title: "Login success", message: nil, preferredStyle: .alert)
                 self?.present(alert, animated: true)

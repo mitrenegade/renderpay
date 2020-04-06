@@ -6,5 +6,6 @@
 //
 
 public protocol LoggingService {
+    func logEvent(_ eventName: String)
     func logEvent(_ eventName: String, params: [String: Any]?)
 }

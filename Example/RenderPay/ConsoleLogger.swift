@@ -13,6 +13,10 @@ class ConsoleLogger: LoggingService {
         self.tag = tag
     }
 
+    func logEvent(_ eventName: String) {
+        logEvent(eventName, params: nil)
+    }
+
     func logEvent(_ eventName: String, params: [String : Any]?) {
         var string: String = "\(tag): \(eventName)"
         if let params = params {
