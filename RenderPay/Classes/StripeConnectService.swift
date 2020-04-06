@@ -11,8 +11,9 @@ import RxCocoa
 import RenderCloud
 
 public class StripeConnectService: ConnectService {
-    let clientId: String
     public var redirectUrl: String? // used for redirect
+
+    let clientId: String
     let apiService: CloudAPIService
     let baseRef: Reference
     

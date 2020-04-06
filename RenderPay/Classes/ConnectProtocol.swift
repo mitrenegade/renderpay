@@ -11,10 +11,7 @@ import RxCocoa
 import RenderCloud
 
 public protocol ConnectService {
-//    let clientId: String { get }
     var redirectUrl: String? { get }// used for redirect
-//    let apiService: CloudAPIService { get }
-//    let baseRef: Reference { get }
     
     var accountState: BehaviorRelay<AccountState> { get }
     
