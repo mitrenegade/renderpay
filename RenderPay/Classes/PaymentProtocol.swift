@@ -20,9 +20,6 @@ public protocol PaymentService {
     var paymentSource: BehaviorRelay<STPPaymentMethod?> { get }
     var statusObserver: Observable<PaymentStatus> { get }
     
-    // customers
-//    let customersDidLoad: BehaviorRelay<Bool> // not used
-    
     init(apiService: CloudAPIService?)
     func resetOnLogout()
     func startListeningForAccount(userId: String)

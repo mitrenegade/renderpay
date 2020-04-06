@@ -3,7 +3,8 @@ use_frameworks!
 target 'RenderPay_Example' do
   pod 'RenderPay', :path => '../'
   pod 'Balizinha', :git => 'https://bitbucket.org/renderapps/balizinha-pod', :tag=>'1.1.3'
-  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'1.3.0'
+#  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'1.3.0'
+  pod 'RenderCloud', :path=>'../../rendercloud'
   pod 'Stripe', '~> 14.0.0'
   pod 'RxSwift', '~> 4.5.0'
   pod 'RxCocoa', '~> 4.5.0'
