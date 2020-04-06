@@ -24,6 +24,7 @@ public class StripeConnectService: ConnectService {
         // for connect
         self.clientId = clientId
         self.apiService = apiService
+        self.logger = logger
     }
     
     public func startListeningForAccount(userId: String) {
