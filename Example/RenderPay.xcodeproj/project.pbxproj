@@ -17,6 +17,7 @@
 		6211ED078B639686F849D410 /* Pods_RenderPay_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 705427A114A20A2B85F2F9EB /* Pods_RenderPay_Tests.framework */; };
 		8E2EC3332254D04A004785E7 /* EventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2EC3322254D04A004785E7 /* EventsViewController.swift */; };
 		8E2EC33922586B90004785E7 /* GoogleService-Info-PannaDev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E2EC33822586B90004785E7 /* GoogleService-Info-PannaDev.plist */; };
+		8E2F454A243AF7B50032EC80 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F4549243AF7B50032EC80 /* ConsoleLogger.swift */; };
 		8E4F06BF21DCF4BE00B8D8FB /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4F06BD21DCF4BE00B8D8FB /* GoogleService-Info-dev.plist */; };
 		8E4F06C021DCF4BE00B8D8FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4F06BE21DCF4BE00B8D8FB /* GoogleService-Info.plist */; };
 		8EC44DFF21D2D512008189DA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC44DFE21D2D512008189DA /* Constants.swift */; };
@@ -50,6 +51,7 @@
 		87E32B10B5BF3E9BAB7322E2 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		8E2EC3322254D04A004785E7 /* EventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewController.swift; sourceTree = "<group>"; };
 		8E2EC33822586B90004785E7 /* GoogleService-Info-PannaDev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-PannaDev.plist"; sourceTree = "<group>"; };
+		8E2F4549243AF7B50032EC80 /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		8E4F06BD21DCF4BE00B8D8FB /* GoogleService-Info-dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-dev.plist"; sourceTree = "<group>"; };
 		8E4F06BE21DCF4BE00B8D8FB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8EC44DFE21D2D512008189DA /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				8E2F4549243AF7B50032EC80 /* ConsoleLogger.swift */,
 			);
 			name = "Example for RenderPay";
 			path = RenderPay;
@@ -289,7 +292,8 @@
 				"${PODS_ROOT}/Target Support Files/Pods-RenderPay_Example/Pods-RenderPay_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
 				"${BUILT_PRODUCTS_DIR}/RxOptional/RxOptional.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
@@ -301,7 +305,8 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxOptional.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
@@ -360,6 +365,7 @@
 				607FACD81AFB9204008FA782 /* MenuViewController.swift in Sources */,
 				8E2EC3332254D04A004785E7 /* EventsViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				8E2F454A243AF7B50032EC80 /* ConsoleLogger.swift in Sources */,
 				8EC44DFF21D2D512008189DA /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
