@@ -11,6 +11,10 @@ import FirebaseCore
 import FirebaseAuth
 import RxSwift
 import RxCocoa
+import FirebaseDatabase
+
+let firRef: DatabaseReference = Database.database().reference()
+let firAuth: Auth = Auth.auth()
 
 public enum LoginState {
     case loggedOut
@@ -18,18 +22,12 @@ public enum LoginState {
 }
 
 public class AuthService: NSObject {
-    public static var shared: AuthService = AuthService(defaults: DefaultsManager(), auth: FIRAuthProvider.standard)
-    
-    // injectables
-    fileprivate let defaultsProvider: DefaultsProvider!
-    fileprivate let authProvider: AuthProvider!
-    
+    public static var shared: AuthService = AuthService()
     fileprivate var stateChangeHandler: AuthStateDidChangeListenerHandle?
-    
-    public init(defaults: DefaultsProvider, auth: AuthProvider) {
-        // TODO: inject firAuth as well
-        defaultsProvider = defaults
-        authProvider = auth
+    let defaultsProvider = UserDefaults.standard
+    let auth = firAuth
+
+    override public init() {
         super.init()
         
         stateChangeHandler = auth.addStateDidChangeListener({ [weak self] (state, user) in
@@ -105,8 +103,5 @@ public class AuthService: NSObject {
     public func logout() {
         print("LoginLogout: logout called, trying firAuth.signout")
         try! firAuth.signOut()
-        EventService.resetOnLogout() // force new listeners
-        PlayerService.resetOnLogout()
-        LeagueService.shared.resetOnLogout()
     }
 }
