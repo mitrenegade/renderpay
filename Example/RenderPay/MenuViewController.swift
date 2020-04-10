@@ -1,9 +1,9 @@
 //
-//  ViewController.swift
-//  RenderPay
+//  MenuViewController.swift
+//  Balizinha Admin
 //
-//  Created by bobbyren on 12/25/2018.
-//  Copyright (c) 2018 bobbyren. All rights reserved.
+//  Created by Bobby Ren on 2/3/18.
+//  Copyright © 2018 RenderApps LLC. All rights reserved.
 //
 
 import UIKit
@@ -12,15 +12,7 @@ import RxSwift
 import RxCocoa
 import Stripe
 import RenderCloud
-import Balizinha
 
-//
-//  MenuViewController.swift
-//  Balizinha Admin
-//
-//  Created by Bobby Ren on 2/3/18.
-//  Copyright © 2018 RenderApps LLC. All rights reserved.
-//
 
 enum MenuItem: String {
     case stripeConnect = "Stripe connect"
