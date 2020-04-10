@@ -13,9 +13,6 @@ import RxSwift
 import RxCocoa
 import FirebaseDatabase
 
-let firRef: DatabaseReference = Database.database().reference()
-let firAuth: Auth = Auth.auth()
-
 public enum LoginState {
     case loggedOut
     case loggedIn
@@ -25,7 +22,7 @@ public class AuthService: NSObject {
     public static var shared: AuthService = AuthService()
     fileprivate var stateChangeHandler: AuthStateDidChangeListenerHandle?
     let defaultsProvider = UserDefaults.standard
-    let auth = firAuth
+    let auth = Globals.firAuth
 
     override public init() {
         super.init()
@@ -47,7 +44,7 @@ public class AuthService: NSObject {
     public var loginState: BehaviorRelay<LoginState> = BehaviorRelay<LoginState>(value: .loggedOut)
 
     public class var currentUser: User? {
-        return firAuth.currentUser
+        return Globals.firAuth.currentUser
     }
 
     public class var isAnonymous: Bool {
@@ -60,7 +57,7 @@ public class AuthService: NSObject {
             //if app is first time opened, make sure no auth exists in keychain from previously deleted app
             defaultsProvider.setValue(true, forKey: "appFirstTimeOpened")
             // signOut from FIRAuth
-            try! firAuth.signOut()
+            try! Globals.firAuth.signOut()
         }
     }
 
@@ -75,7 +72,7 @@ public class AuthService: NSObject {
             return
         }
         
-        firAuth.signIn(withEmail: email, password: password, completion: { (user, error) in
+        Globals.firAuth.signIn(withEmail: email, password: password, completion: { (user, error) in
             if let error: NSError = error as NSError? {
                 print("Error: \(error)")
                 // let observer handle things
@@ -102,6 +99,6 @@ public class AuthService: NSObject {
     
     public func logout() {
         print("LoginLogout: logout called, trying firAuth.signout")
-        try! firAuth.signOut()
+        try! Globals.firAuth.signOut()
     }
 }
