@@ -162,7 +162,7 @@ PODS:
   - Stripe (14.0.0)
 
 DEPENDENCIES:
-  - Balizinha (from `https://bitbucket.org/renderapps/balizinha-pod`, tag `1.1.3`)
+  - Balizinha (from `../../balizinha-pod`)
   - RenderCloud (from `../../rendercloud`)
   - RenderPay (from `../`)
   - RxCocoa (~> 4.5.0)
@@ -204,17 +204,11 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Balizinha:
-    :git: https://bitbucket.org/renderapps/balizinha-pod
-    :tag: 1.1.3
+    :path: "../../balizinha-pod"
   RenderCloud:
     :path: "../../rendercloud"
   RenderPay:
     :path: "../"
-
-CHECKOUT OPTIONS:
-  Balizinha:
-    :git: https://bitbucket.org/renderapps/balizinha-pod
-    :tag: 1.1.3
 
 SPEC CHECKSUMS:
   Balizinha: 223c46599c7a04fb80c744beeb5e01e7e311a3b0
@@ -249,6 +243,6 @@ SPEC CHECKSUMS:
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
   Stripe: db29ad197c74aca6fb981e4e8355cf7ebd0fca5a
 
-PODFILE CHECKSUM: a8bd704b07737a328065624936c93312710dd5b3
+PODFILE CHECKSUM: 5e272660e57482a3f271a6c5dbc2b07d9ab32eb5
 
 COCOAPODS: 1.8.4

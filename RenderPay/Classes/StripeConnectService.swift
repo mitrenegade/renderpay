@@ -11,7 +11,6 @@ import RxCocoa
 import RenderCloud
 
 public class StripeConnectService: ConnectService {
-    public var redirectUrl: String? // used for redirect
 
     let clientId: String
     let apiService: CloudAPIService
@@ -20,6 +19,7 @@ public class StripeConnectService: ConnectService {
     private let logger: LoggingService?
     private var accountRef: Reference?
     
+    public let redirectUrl: String
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
     required public init(clientId: String, apiService: CloudAPIService, baseRef: Reference, logger: LoggingService? = nil) {
@@ -28,6 +28,7 @@ public class StripeConnectService: ConnectService {
         self.apiService = apiService
         self.logger = logger
         self.baseRef = baseRef
+        self.redirectUrl = "\(apiService.baseUrl.absoluteString)/stripeConnectRedirectHandler"
     }
     
     public func startListeningForAccount(userId: String) {
@@ -70,10 +71,7 @@ public class StripeConnectService: ConnectService {
 extension StripeConnectService {
     func getOAuthUrl(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = RenderAPIService.baseURL?.absoluteString {
-            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
-        }
+        let url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)&redirect_uri=\(redirectUrl)"
         return url
     }
 }

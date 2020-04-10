@@ -25,7 +25,7 @@ let FIREBASE_URL_DEV = "https://us-central1-balizinha-dev.cloudfunctions.net"
 let FIREBASE_URL_PROD = "https://us-central1-balizinha-c9cd7.cloudfunctions.net"
 
 class Globals {
-    static var apiService: CloudAPIService = RenderAPIService()
+    static var apiService: CloudAPIService = RenderAPIService(baseUrl: TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD)!
     static var consoleLogger: LoggingService = { return ConsoleLogger(tag: "RenderPayLogging") }()
     static var defaultLogger: LoggingService? = nil
     static var stripeConnectService: StripeConnectService = StripeConnectService(clientId: TESTING ? STRIPE_CLIENT_ID_DEV : STRIPE_CLIENT_ID_PROD, apiService: Globals.apiService, baseRef: Database.database().reference(), logger: TESTING ? Globals.consoleLogger : Globals.defaultLogger)

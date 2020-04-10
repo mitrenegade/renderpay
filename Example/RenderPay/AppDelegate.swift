@@ -9,9 +9,7 @@
 import UIKit
 import FirebaseDatabase
 import Firebase
-import FirebaseMessaging
 import RenderPay
-import Balizinha
 import Stripe
 import RenderCloud
 
@@ -29,8 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let path = filePath, let fileopts = FirebaseOptions.init(contentsOfFile: path) {
             FirebaseApp.configure(options: fileopts)
         }
-        let baseUrl = TESTING ? FIREBASE_URL_DEV : FIREBASE_URL_PROD
-        RenderAPIService.baseURL = URL(string: baseUrl)
 
         // stripe
         // for payments
