@@ -5,11 +5,12 @@
 //  Created by Bobby Ren on 2/24/19.
 //
 
-import Foundation
 import RxSwift
 import RxCocoa
 import RenderCloud
 import Stripe
+
+// TODO: for RenderPay v1.0.0, PaymentService must not be dependent on Stripe
 
 public protocol PaymentService {
     // payment method

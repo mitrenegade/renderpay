@@ -7,11 +7,6 @@
 //
 
 import UIKit
-import FirebaseDatabase
-import Firebase
-import RenderPay
-import Stripe
-import RenderCloud
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
