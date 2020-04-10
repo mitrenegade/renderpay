@@ -16,7 +16,7 @@ public protocol ConnectService {
     var accountState: BehaviorRelay<AccountState> { get }
     
     init(clientId: String, apiService: CloudAPIService, baseRef: Reference, logger: LoggingService?)
+    func connectToAccount(_ userId: String)
     func startListeningForAccount(userId: String)
-    func getOAuthUrl(_ userId: String) -> String?
     func stopListeningForAccount()
 }

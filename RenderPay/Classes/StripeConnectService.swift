@@ -52,7 +52,12 @@ public class StripeConnectService: ConnectService {
         }
     }
     
-    public func getOAuthUrl(_ userId: String) -> String? {
+    public func connectToAccount(_ userId: String) {
+        guard let urlString = getOAuthUrl(userId), let url = URL(string: urlString) else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+    
+    private func getOAuthUrl(_ userId: String) -> String? {
         // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
         var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
         if let baseUrl = RenderAPIService.baseURL?.absoluteString {
