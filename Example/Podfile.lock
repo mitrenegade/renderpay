@@ -1,21 +1,6 @@
 PODS:
-  - Balizinha (1.1.3):
-    - Firebase
-    - Firebase/Analytics
-    - Firebase/Auth
-    - Firebase/Core
-    - Firebase/Database
-    - Firebase/Messaging
-    - Firebase/RemoteConfig
-    - Firebase/Storage
-    - RenderCloud
-    - RxCocoa
-    - RxOptional
-    - RxSwift
   - Firebase (6.21.0):
     - Firebase/Core (= 6.21.0)
-  - Firebase/Analytics (6.21.0):
-    - Firebase/Core
   - Firebase/Auth (6.21.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.5.1)
@@ -27,9 +12,6 @@ PODS:
   - Firebase/Database (6.21.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 6.1.4)
-  - Firebase/Messaging (6.21.0):
-    - Firebase/CoreOnly
-    - FirebaseMessaging (~> 4.3.0)
   - Firebase/RemoteConfig (6.21.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 4.4.9)
@@ -82,15 +64,6 @@ PODS:
     - FirebaseInstallations (~> 1.0)
     - GoogleUtilities/Environment (~> 6.5)
     - GoogleUtilities/UserDefaults (~> 6.5)
-  - FirebaseMessaging (4.3.0):
-    - FirebaseAnalyticsInterop (~> 1.5)
-    - FirebaseCore (~> 6.6)
-    - FirebaseInstanceID (~> 4.3)
-    - GoogleUtilities/AppDelegateSwizzler (~> 6.5)
-    - GoogleUtilities/Environment (~> 6.5)
-    - GoogleUtilities/Reachability (~> 6.5)
-    - GoogleUtilities/UserDefaults (~> 6.5)
-    - Protobuf (>= 3.9.2, ~> 3.9)
   - FirebaseRemoteConfig (4.4.9):
     - FirebaseABTesting (~> 3.1)
     - FirebaseAnalyticsInterop (~> 1.4)
@@ -162,7 +135,6 @@ PODS:
   - Stripe (14.0.0)
 
 DEPENDENCIES:
-  - Balizinha (from `../../balizinha-pod`)
   - RenderCloud (from `../../rendercloud`)
   - RenderPay (from `../`)
   - RxCocoa (~> 4.5.0)
@@ -189,7 +161,6 @@ SPEC REPOS:
     - FirebaseDatabase
     - FirebaseInstallations
     - FirebaseInstanceID
-    - FirebaseMessaging
     - FirebaseRemoteConfig
     - FirebaseStorage
     - GoogleAppMeasurement
@@ -203,15 +174,12 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
-  Balizinha:
-    :path: "../../balizinha-pod"
   RenderCloud:
     :path: "../../rendercloud"
   RenderPay:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Balizinha: 223c46599c7a04fb80c744beeb5e01e7e311a3b0
   Firebase: f378c80340dd41c0ad0914af740c021eb282a04b
   FirebaseABTesting: 821a3a3e4a145987e80fee3657c4de1cb9adf693
   FirebaseAnalytics: a1a0b3327ceb5cd5b4bacffdb293f6c909aa087d
@@ -224,7 +192,6 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 0144e0706a4761f1b0e8679572eba8095ddb59be
   FirebaseInstallations: acb3216eb9784d3b1d2d2d635ff74fa892cc0c44
   FirebaseInstanceID: 7ee0d6777013bb952f377b41965bf132b6a075be
-  FirebaseMessaging: 4ec33842d36b3319e062e51fb8b35a74f726950d
   FirebaseRemoteConfig: 47abf7a04a9082091955ea555aa79cfdd249b19c
   FirebaseStorage: b43ee271294227e1a3225544b073f3b49b427f46
   GoogleAppMeasurement: 6e68a94d0eaeb1d73ef6b0ed4f7334e29d63ae29
@@ -243,6 +210,6 @@ SPEC CHECKSUMS:
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
   Stripe: db29ad197c74aca6fb981e4e8355cf7ebd0fca5a
 
-PODFILE CHECKSUM: 5e272660e57482a3f271a6c5dbc2b07d9ab32eb5
+PODFILE CHECKSUM: 8b484212928b25a2bf7a2c51f0b176f5d4708993
 
 COCOAPODS: 1.8.4

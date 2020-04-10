@@ -10,7 +10,6 @@ import UIKit
 import RenderPay
 import RxSwift
 import RxCocoa
-import Balizinha
 
 class EventsViewController: UIViewController {
     @IBOutlet weak var label: UILabel!
