@@ -1,5 +1,5 @@
 import XCTest
-import RenderPay
+@testable import RenderPay
 
 class StripeServiceTests: XCTestCase {
     var service: StripeConnectService!

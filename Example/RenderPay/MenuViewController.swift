@@ -12,6 +12,7 @@ import RxSwift
 import RxCocoa
 import Stripe
 import RenderCloud
+import Balizinha
 
 //
 //  MenuViewController.swift
