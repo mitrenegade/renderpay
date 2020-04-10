@@ -11,7 +11,6 @@ import RxCocoa
 import RenderCloud
 
 public class StripeConnectService: ConnectService {
-    public var redirectUrl: String? // used for redirect
 
     let clientId: String
     let apiService: CloudAPIService
@@ -20,6 +19,12 @@ public class StripeConnectService: ConnectService {
     private let logger: LoggingService?
     private var accountRef: Reference?
     
+    var redirectUrl: String? {
+        if let urlString = apiService.baseUrl?.absoluteString {
+            return "\(urlString)/stripeConnectRedirectHandler"
+        }
+        return nil
+    }
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
     required public init(clientId: String, apiService: CloudAPIService, baseRef: Reference, logger: LoggingService? = nil) {
@@ -52,20 +57,28 @@ public class StripeConnectService: ConnectService {
         }
     }
     
-    public func getOAuthUrl(_ userId: String) -> String? {
-        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = RenderAPIService.baseURL?.absoluteString {
-            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
-        }
-        return url
+    public func connectToAccount(_ userId: String) {
+        guard let urlString = getOAuthUrl(userId), let url = URL(string: urlString) else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
-    
+
     // on logout
     public func stopListeningForAccount() {
         logger?.logEvent("Stop listening for account")
         accountRef?.removeAllObservers()
         accountRef = nil
         accountState.accept(.none)
+    }
+}
+
+// mark: - Internal functions
+extension StripeConnectService {
+    func getOAuthUrl(_ userId: String) -> String? {
+        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
+        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
+        if let redirect = redirectUrl {
+            url = "&redirect_uri=\(redirect)"
+        }
+        return url
     }
 }
