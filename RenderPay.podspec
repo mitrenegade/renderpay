@@ -38,6 +38,9 @@ Payment library using Stripe
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
+  s.dependency 'RxSwift'
+  s.dependency 'RxCocoa'
+  s.dependency 'RxOptional'
   s.dependency 'RenderCloud'
   s.dependency 'Stripe'
 end
