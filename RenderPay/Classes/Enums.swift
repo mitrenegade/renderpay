@@ -8,6 +8,8 @@
 import Foundation
 import Stripe
 
+// TODO: for RenderPay v1.0.0, PaymentService must not be dependent on Stripe.
+
 // MARK: - Payment enums
 public enum PaymentStatus {
     case loading
