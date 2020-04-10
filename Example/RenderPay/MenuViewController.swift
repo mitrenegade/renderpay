@@ -194,7 +194,8 @@ class MenuViewController: UIViewController {
                 }
             })
         case .needsRefresh:
-            print("Here's a card")
+            // show payment methods
+            paymentService.shouldShowPaymentController()
             break
         case .noPaymentMethod:
             // show payment methods
