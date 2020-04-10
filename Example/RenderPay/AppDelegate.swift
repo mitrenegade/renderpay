@@ -19,19 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Firebase
-        // Do not include infolist in project: https://firebase.google.com/docs/configure/#reliable-analytics
-        let plistFilename = "GoogleService-Info\(TESTING ? "-PannaDev" : "")"
-        let filePath = Bundle.main.path(forResource: plistFilename, ofType: "plist")
-        assert(filePath != nil, "File doesn't exist")
-        if let path = filePath, let fileopts = FirebaseOptions.init(contentsOfFile: path) {
-            FirebaseApp.configure(options: fileopts)
-        }
-
-        // stripe
-        // for payments
-        let config = STPPaymentConfiguration.shared()
-        config.publishableKey = TESTING ? STRIPE_PUBLISHABLE_KEY_DEV : STRIPE_PUBLISHABLE_KEY_PROD
 
         return true
     }
