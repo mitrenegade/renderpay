@@ -19,7 +19,7 @@ public class StripeConnectService: ConnectService {
     private let logger: LoggingService?
     private var accountRef: Reference?
     
-    public var redirectUrl: String? {
+    var redirectUrl: String? {
         if let urlString = apiService.baseUrl?.absoluteString {
             return "\(urlString)/stripeConnectRedirectHandler"
         }
