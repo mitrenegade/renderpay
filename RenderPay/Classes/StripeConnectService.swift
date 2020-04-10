@@ -56,21 +56,24 @@ public class StripeConnectService: ConnectService {
         guard let urlString = getOAuthUrl(userId), let url = URL(string: urlString) else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
-    
-    private func getOAuthUrl(_ userId: String) -> String? {
-        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
-        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
-        if let baseUrl = RenderAPIService.baseURL?.absoluteString {
-            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
-        }
-        return url
-    }
-    
+
     // on logout
     public func stopListeningForAccount() {
         logger?.logEvent("Stop listening for account")
         accountRef?.removeAllObservers()
         accountRef = nil
         accountState.accept(.none)
+    }
+}
+
+// mark: - Internal functions
+extension StripeConnectService {
+    func getOAuthUrl(_ userId: String) -> String? {
+        // to pass the userId through the redirect: https://stackoverflow.com/questions/32501820/associate-application-user-with-stripe-user-after-stripe-connect-oauth-callback
+        var url: String = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=\(clientId)&scope=read_write&state=\(userId)"
+        if let baseUrl = RenderAPIService.baseURL?.absoluteString {
+            url = "\(url)&redirect_uri=\(baseUrl)/stripeConnectRedirectHandler"
+        }
+        return url
     }
 }
