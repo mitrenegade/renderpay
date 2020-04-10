@@ -13,8 +13,7 @@ import RenderCloud
 public class StripeConnectService: ConnectService {
 
     let clientId: String
-    let apiService: CloudAPIService
-    let baseRef: Reference
+    let apiService: CloudAPIService & CloudDatabaseService
     
     private let logger: LoggingService?
     private var accountRef: Reference?
@@ -27,12 +26,11 @@ public class StripeConnectService: ConnectService {
     }
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    required public init(clientId: String, apiService: CloudAPIService, baseRef: Reference, logger: LoggingService? = nil) {
+    required public init(clientId: String, apiService: CloudAPIService & CloudDatabaseService, baseRef: Reference, logger: LoggingService? = nil) {
         // for connect
         self.clientId = clientId
         self.apiService = apiService
         self.logger = logger
-        self.baseRef = baseRef
     }
     
     public func startListeningForAccount(userId: String) {
@@ -40,7 +38,7 @@ public class StripeConnectService: ConnectService {
         
         logger?.logEvent("Listening for account", params: ["userId": userId])
         
-        accountRef = baseRef.child(path: "stripeConnectAccounts").child(path: userId)
+        accountRef = apiService.connectedAccount(with: userId)
         accountRef?.observeValue { [weak self] (snapshot) in
             guard snapshot.exists(), let info = snapshot.value as? [String: Any] else {
                 self?.logger?.logEvent("Account state", params: ["state": "none"])
