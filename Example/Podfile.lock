@@ -1,6 +1,6 @@
 PODS:
   - RenderCloud (2.0.1)
-  - RenderPay (0.9.0):
+  - RenderPay (1.0.0):
     - RenderCloud
     - RxCocoa
     - RxOptional
@@ -33,7 +33,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   RenderCloud: 445ade53c7a447e8750ce16d6fbfe37c737c312e
-  RenderPay: d54ae75f36137dad7416a8fe903f00b331ad2126
+  RenderPay: 2019a676aee2ca5a1a6e8244c3b51387aa42358c
   RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
   RxOptional: 80426a0ddbd092573e4c482d8cc13302078c4d5e
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
