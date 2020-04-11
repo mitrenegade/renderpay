@@ -9,7 +9,6 @@ import UIKit
 import RxSwift
 import RxCocoa
 import RenderCloud
-import RenderPay
 
 public class StripeConnectService: ConnectService {
 

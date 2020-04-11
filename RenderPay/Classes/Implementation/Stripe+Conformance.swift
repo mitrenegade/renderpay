@@ -7,7 +7,6 @@
 //  Dependency inversion conformance for STPCard and STPSource to RenderPay.PaymentSource
 
 import Stripe
-import RenderPay
 
 extension STPCard: PaymentSource {
     public var id: String {

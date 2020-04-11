@@ -12,7 +12,6 @@ import RxOptional
 import FirebaseDatabase
 import Stripe
 import RenderCloud
-import RenderPay
 
 public class StripePaymentService: NSObject, PaymentService {
     fileprivate var customers: [String: String] = [:]
