@@ -18,7 +18,10 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-Payment library using Stripe
+    This pod provides an interface into:
+    	 Payment
+	 Connected accounts (platform connect)
+    This pod has a vanilla implementation using Stripe
                        DESC
 
   s.homepage         = 'https://github.com/bobbyren/RenderPay'
@@ -42,4 +45,5 @@ Payment library using Stripe
   s.dependency 'RxCocoa'
   s.dependency 'RxOptional'
   s.dependency 'RenderCloud'
+  s.dependency 'Stripe', '~> 14.0'
 end
