@@ -8,7 +8,6 @@
 import RxSwift
 import RxCocoa
 import RenderCloud
-import Stripe
 
 // TODO: for RenderPay v1.0.0, PaymentService must not be dependent on Stripe
 
@@ -18,7 +17,7 @@ public protocol PaymentService {
     
     // state observables
     var customerId: BehaviorRelay<String?> { get }
-    var paymentSource: BehaviorRelay<STPPaymentMethod?> { get }
+    var paymentSource: BehaviorRelay<PaymentSource?> { get }
     var statusObserver: Observable<PaymentStatus> { get }
     
     init(apiService: CloudAPIService?)
