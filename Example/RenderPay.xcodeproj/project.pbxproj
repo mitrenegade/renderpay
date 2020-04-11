@@ -15,6 +15,14 @@
 		607FACEC1AFB9204008FA782 /* StripeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* StripeServiceTests.swift */; };
 		6211ED078B639686F849D410 /* Pods_RenderPay_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 705427A114A20A2B85F2F9EB /* Pods_RenderPay_Tests.framework */; };
 		8EC44DFF21D2D512008189DA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC44DFE21D2D512008189DA /* Constants.swift */; };
+		8ED17BC8244273080038154E /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED17BC5244273080038154E /* MenuViewController.swift */; };
+		8ED17BC9244273080038154E /* EventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED17BC6244273080038154E /* EventsViewController.swift */; };
+		8ED17BCA244273080038154E /* UIViewController+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED17BC7244273080038154E /* UIViewController+Utils.swift */; };
+		8ED17BCC2442730E0038154E /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED17BCB2442730E0038154E /* ConsoleLogger.swift */; };
+		8ED17BD0244273150038154E /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8ED17BCD244273140038154E /* GoogleService-Info-dev.plist */; };
+		8ED17BD1244273150038154E /* GoogleService-Info-PannaDev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8ED17BCE244273140038154E /* GoogleService-Info-PannaDev.plist */; };
+		8ED17BD2244273150038154E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8ED17BCF244273140038154E /* GoogleService-Info.plist */; };
+		8ED17BD4244273220038154E /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED17BD3244273220038154E /* AuthService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +51,14 @@
 		83DFE7DB7029EDA44D8178DE /* RenderPay.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = RenderPay.podspec; path = ../RenderPay.podspec; sourceTree = "<group>"; };
 		87E32B10B5BF3E9BAB7322E2 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		8EC44DFE21D2D512008189DA /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8ED17BC5244273080038154E /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		8ED17BC6244273080038154E /* EventsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsViewController.swift; sourceTree = "<group>"; };
+		8ED17BC7244273080038154E /* UIViewController+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Utils.swift"; sourceTree = "<group>"; };
+		8ED17BCB2442730E0038154E /* ConsoleLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
+		8ED17BCD244273140038154E /* GoogleService-Info-dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-dev.plist"; sourceTree = "<group>"; };
+		8ED17BCE244273140038154E /* GoogleService-Info-PannaDev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-PannaDev.plist"; sourceTree = "<group>"; };
+		8ED17BCF244273140038154E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		8ED17BD3244273220038154E /* AuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		AB2B19B3228BBA721B321585 /* Pods-RenderPay_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RenderPay_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RenderPay_Tests/Pods-RenderPay_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C6007DF6699BB323545B4B61 /* Pods-RenderPay_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RenderPay_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-RenderPay_Example/Pods-RenderPay_Example.release.xcconfig"; sourceTree = "<group>"; };
 		CFCD1BC6B2B1F6E9ADDA4F62 /* Pods-RenderPay_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RenderPay_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RenderPay_Tests/Pods-RenderPay_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -93,6 +109,11 @@
 		607FACD21AFB9204008FA782 /* Example for RenderPay */ = {
 			isa = PBXGroup;
 			children = (
+				8ED17BD3244273220038154E /* AuthService.swift */,
+				8ED17BCB2442730E0038154E /* ConsoleLogger.swift */,
+				8ED17BC6244273080038154E /* EventsViewController.swift */,
+				8ED17BC5244273080038154E /* MenuViewController.swift */,
+				8ED17BC7244273080038154E /* UIViewController+Utils.swift */,
 				8EC44DFE21D2D512008189DA /* Constants.swift */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -107,6 +128,9 @@
 		607FACD31AFB9204008FA782 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8ED17BCD244273140038154E /* GoogleService-Info-dev.plist */,
+				8ED17BCE244273140038154E /* GoogleService-Info-PannaDev.plist */,
+				8ED17BCF244273140038154E /* GoogleService-Info.plist */,
 				607FACD41AFB9204008FA782 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -247,8 +271,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				8ED17BD0244273150038154E /* GoogleService-Info-dev.plist in Resources */,
+				8ED17BD1244273150038154E /* GoogleService-Info-PannaDev.plist in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				8ED17BD2244273150038154E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,7 +369,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				8ED17BC9244273080038154E /* EventsViewController.swift in Sources */,
+				8ED17BC8244273080038154E /* MenuViewController.swift in Sources */,
+				8ED17BCC2442730E0038154E /* ConsoleLogger.swift in Sources */,
 				8EC44DFF21D2D512008189DA /* Constants.swift in Sources */,
+				8ED17BCA244273080038154E /* UIViewController+Utils.swift in Sources */,
+				8ED17BD4244273220038154E /* AuthService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
