@@ -1,30 +1,25 @@
 PODS:
-  - RenderCloud (2.0.0)
-  - RenderPay (0.2.1):
+  - RenderCloud (2.0.1)
+  - RenderPay (0.9.0):
     - RenderCloud
     - RxCocoa
     - RxOptional
     - RxSwift
-    - Stripe
   - RxCocoa (4.5.0):
     - RxSwift (>= 4.4.2, ~> 4.4)
   - RxOptional (3.6.2):
     - RxCocoa (~> 4.0)
     - RxSwift (~> 4.0)
   - RxSwift (4.5.0)
-  - Stripe (14.0.0)
 
 DEPENDENCIES:
-  - RenderCloud (from `https://bitbucket.org/renderapps/RenderCloud`, tag `2.0.0`)
+  - RenderCloud (from `../../rendercloud`)
   - RenderPay (from `../`)
   - RxCocoa (~> 4.5)
   - RxOptional (~> 3.6)
   - RxSwift (~> 4.5)
-  - Stripe (~> 14.0)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
-    - Stripe
   trunk:
     - RxCocoa
     - RxOptional
@@ -32,24 +27,17 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   RenderCloud:
-    :git: https://bitbucket.org/renderapps/RenderCloud
-    :tag: 2.0.0
+    :path: "../../rendercloud"
   RenderPay:
     :path: "../"
 
-CHECKOUT OPTIONS:
-  RenderCloud:
-    :git: https://bitbucket.org/renderapps/RenderCloud
-    :tag: 2.0.0
-
 SPEC CHECKSUMS:
-  RenderCloud: e16de59e8a2f4fc4d46fac3a7118ae2e7b10973b
-  RenderPay: d525535e034efc4aebf3467f71a1560466617d21
+  RenderCloud: 445ade53c7a447e8750ce16d6fbfe37c737c312e
+  RenderPay: d54ae75f36137dad7416a8fe903f00b331ad2126
   RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
   RxOptional: 80426a0ddbd092573e4c482d8cc13302078c4d5e
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
-  Stripe: db29ad197c74aca6fb981e4e8355cf7ebd0fca5a
 
-PODFILE CHECKSUM: 3ade895fbd09f937dd8e85af2c6a33726b32267f
+PODFILE CHECKSUM: a2743465dd9803e4964d80f34350aa99248c0031
 
 COCOAPODS: 1.8.4

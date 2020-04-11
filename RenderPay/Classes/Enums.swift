@@ -5,18 +5,13 @@
 //  Created by Bobby Ren on 2/24/19.
 //
 
-import Foundation
-import Stripe
-
-// TODO: for RenderPay v1.0.0, PaymentService must not be dependent on Stripe.
-
 // MARK: - Payment enums
 public enum PaymentStatus {
     case loading
     case noCustomer
     case noPaymentMethod // no customer_id exists
-    case needsRefresh(card: STPCard)
-    case ready(source: STPSource)
+    case needsRefresh(card: PaymentSource)
+    case ready(source: PaymentSource)
     
     public static func ==(lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
         switch (lhs, rhs) {
@@ -27,9 +22,9 @@ public enum PaymentStatus {
         case (.loading, .loading):
             return true
         case (.needsRefresh(let c1), .needsRefresh(let c2)):
-            return c1.stripeID == c2.stripeID
+            return c1.id == c2.id
         case (.ready(let s1), .ready(let s2)):
-            return s1.stripeID == s2.stripeID
+            return s1.id == s2.id
         default:
             return false
         }
