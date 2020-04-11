@@ -2,9 +2,8 @@ use_frameworks!
 
 target 'RenderPay_Example' do
   pod 'RenderPay', :path => '../'
-  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'2.0.0'
-#  pod 'RenderCloud', :path=>'../../rendercloud'
-  pod 'Stripe', '~> 14.0'
+#  pod 'RenderCloud', :git => 'https://bitbucket.org/renderapps/RenderCloud', :tag=>'2.0.0'
+  pod 'RenderCloud', :path=>'../../rendercloud'
   pod 'RxCocoa', '~> 4.5'
   pod 'RxOptional', '~> 3.6'
   pod 'RxSwift', '~> 4.5'
