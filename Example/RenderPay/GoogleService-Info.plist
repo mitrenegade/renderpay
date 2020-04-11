@@ -7,34 +7,34 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>808251410613-vbpitvq5b1e864feqnis4n94r4pjs6hb.apps.googleusercontent.com</string>
+	<string>604793521337-m1lcimo2n9lk7plkev984ugku2jge79e.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.808251410613-vbpitvq5b1e864feqnis4n94r4pjs6hb</string>
+	<string>com.googleusercontent.apps.604793521337-m1lcimo2n9lk7plkev984ugku2jge79e</string>
 	<key>API_KEY</key>
-	<string>AIzaSyD9hjdkiKiNFm93J-aSgOW6qTBy3lKyZO4</string>
+	<string>AIzaSyBXvVaq_lpcUyV3jF-NiuGBpdeBGeOKVm4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>808251410613</string>
+	<string>604793521337</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>net.BobbyRen.cwsfroster</string>
+	<string>io.renderapps.balizinha.admin</string>
 	<key>PROJECT_ID</key>
-	<string>rollcall-and-random-drawing</string>
+	<string>balizinha-c9cd7</string>
 	<key>STORAGE_BUCKET</key>
-	<string>rollcall-and-random-drawing.appspot.com</string>
+	<string>balizinha-c9cd7.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<false></false>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:808251410613:ios:7062fdf3ac26d58b</string>
+	<string>1:604793521337:ios:12dc225e02bb7e20</string>
 	<key>DATABASE_URL</key>
-	<string>https://rollcall-and-random-drawing.firebaseio.com</string>
+	<string>https://balizinha-c9cd7.firebaseio.com</string>
 </dict>
 </plist>
