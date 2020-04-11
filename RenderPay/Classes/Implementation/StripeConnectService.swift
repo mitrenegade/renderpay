@@ -15,21 +15,16 @@ public class StripeConnectService: ConnectService {
 
     let clientId: String
     let apiService: CloudAPIService & CloudDatabaseService
-    
+    private let redirectUrl: String?
     private let logger: LoggingService?
     private var accountRef: Reference?
     
-    var redirectUrl: String? {
-        if let urlString = apiService.baseUrl?.absoluteString {
-            return "\(urlString)/stripeConnectRedirectHandler"
-        }
-        return nil
-    }
     public var accountState: BehaviorRelay<AccountState> = BehaviorRelay<AccountState>(value: .unknown)
     
-    required public init(clientId: String, apiService: CloudAPIService & CloudDatabaseService, baseRef: Reference, logger: LoggingService? = nil) {
+    required public init(clientId: String, redirectUrl: String? = nil, apiService: CloudAPIService & CloudDatabaseService, logger: LoggingService? = nil) {
         // for connect
         self.clientId = clientId
+        self.redirectUrl = redirectUrl
         self.apiService = apiService
         self.logger = logger
     }
