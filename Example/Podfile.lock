@@ -113,14 +113,14 @@ PODS:
   - nanopb/encode (0.3.9011)
   - PromisesObjC (1.2.8)
   - Protobuf (3.11.4)
-  - RenderCloud (2.0.1):
+  - RenderCloud (2.0.0):
     - Firebase
     - Firebase/Auth
     - Firebase/Core
     - Firebase/Database
     - Firebase/RemoteConfig
     - Firebase/Storage
-  - RenderPay (1.0.1):
+  - RenderPay (1.0.0):
     - RenderCloud
     - RxCocoa
     - RxOptional
@@ -201,8 +201,8 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
-  RenderCloud: 6994a8f41fcacfcd758d294316003403294c93f4
-  RenderPay: 30c0bdacc803cf108892c8be8e7761f7b8fdbfb4
+  RenderCloud: 0afb06feb5a67ca8f4a229a9a8417400e6e0bab7
+  RenderPay: b9d590d98db8e91bbd11e6f8be8eeaff9a8c8dae
   RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
   RxOptional: 80426a0ddbd092573e4c482d8cc13302078c4d5e
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
