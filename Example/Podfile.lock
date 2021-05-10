@@ -128,20 +128,23 @@ PODS:
     - RxOptional
     - RxSwift
     - Stripe (~> 14.0)
-  - RxCocoa (4.5.0):
-    - RxSwift (>= 4.4.2, ~> 4.4)
-  - RxOptional (3.6.2):
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
-  - RxSwift (4.5.0)
+  - RxCocoa (6.2.0):
+    - RxRelay (= 6.2.0)
+    - RxSwift (= 6.2.0)
+  - RxOptional (5.0.2):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxSwift (6.2.0)
   - Stripe (14.0.2)
 
 DEPENDENCIES:
   - RenderCloud (from `../../rendercloud`)
   - RenderPay (from `../`)
-  - RxCocoa (~> 4.5)
-  - RxOptional (~> 3.6)
-  - RxSwift (~> 4.5)
+  - RxCocoa
+  - RxOptional
+  - RxSwift
 
 SPEC REPOS:
   trunk:
@@ -164,6 +167,7 @@ SPEC REPOS:
     - PromisesObjC
     - RxCocoa
     - RxOptional
+    - RxRelay
     - RxSwift
     - Stripe
 
@@ -193,11 +197,12 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   RenderCloud: 0afb06feb5a67ca8f4a229a9a8417400e6e0bab7
   RenderPay: 7621175c010c1099758d078487408a62bcb3779f
-  RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
-  RxOptional: 80426a0ddbd092573e4c482d8cc13302078c4d5e
-  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
+  RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
+  RxOptional: 3664964c96b69dd20c9cf78bdfe546615e26eca8
+  RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
+  RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   Stripe: 25c07000e7e86ffc53da0e41a5dd1bce30470fe0
 
-PODFILE CHECKSUM: a2743465dd9803e4964d80f34350aa99248c0031
+PODFILE CHECKSUM: 39634efc6f0c4a36360da38331b7502226cbee53
 
 COCOAPODS: 1.10.1
