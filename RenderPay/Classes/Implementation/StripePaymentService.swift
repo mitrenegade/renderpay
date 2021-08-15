@@ -25,7 +25,7 @@ public class StripePaymentService: NSObject, PaymentService {
     // state observables
     public let customerId: BehaviorRelay<String?> = BehaviorRelay<String?>(value: nil)
     public let paymentSource: BehaviorRelay<PaymentSource?> = BehaviorRelay<PaymentSource?>(value: nil)
-    fileprivate let paymentContextLoading: Variable<Bool> = Variable(false) // when paymentContext loading state changes, we don't get a reactive notification
+    fileprivate let paymentContextLoading: BehaviorRelay<Bool> = BehaviorRelay(value: false) // when paymentContext loading state changes, we don't get a reactive notification
     public let statusObserver: Observable<PaymentStatus>
     
     // customers
@@ -81,12 +81,12 @@ public class StripePaymentService: NSObject, PaymentService {
         disposeBag = DisposeBag()
         customerId.accept(nil)
         _storedPaymentSource = nil
-        paymentContextLoading.value = false
+        paymentContextLoading.accept(false)
         paymentContext = nil
     }
     
     public func startListeningForAccount(userId: String) {
-        paymentContextLoading.value = true
+        paymentContextLoading.accept(true)
         self.userId = userId
         let firRef = Database.database().reference()
         let ref = firRef.child("stripeCustomers").child(userId)
@@ -252,7 +252,7 @@ extension StripePaymentService: STPPaymentContextDelegate {
             paymentSource.accept(source)
         }
         // loading must be set after source is at the right value because loading is higher priority in determing status
-        paymentContextLoading.value = paymentContext.loading
+        paymentContextLoading.accept(paymentContext.loading)
     }
     
     public func paymentContext(_ paymentContext: STPPaymentContext, didFailToLoadWithError error: Error) {
